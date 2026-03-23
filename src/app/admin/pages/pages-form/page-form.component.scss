@@ -1,0 +1,44 @@
+.pages-form {
+  max-width: 900px;
+
+  label { display: block; margin: 12px 0 6px; font-weight: 600; }
+  input, textarea, select {
+    width: 100%;
+    border: 1px solid #cfe0da;
+    border-radius: 10px;
+    padding: 10px 12px;
+    background: #fff;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    
+  }
+
+.editor {
+  height: 300px;
+  margin-bottom: 20px;
+}
+
+.preview img {
+  width: 180px;
+  height: auto;
+  border-radius: 8px;
+  margin-top: 10px;
+  border: 1px solid #d2dede;
+}
+
+  .actions {
+    display: flex; gap: 10px; margin-top: 16px;
+  }
+
+  .btn {
+    padding: 10px 14px; border-radius: 8px; border: 1px solid #cdd7d4; background: #fff; cursor: pointer;
+    &.primary { background: #0a3c2e; color: #fff; border-color: #0a3c2e; }
+  }
+
+  .muted { color: #5a6b64; }
+  .error { color: #b00020; }
+}

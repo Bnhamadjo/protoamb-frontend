@@ -1,0 +1,63 @@
+<div class="pages-list anim-fade-in">
+  <header class="list-header" style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 30px;">
+    <div>
+      <h1>Páginas</h1>
+      <p class="muted">Gerencie as páginas estáticas do portal.</p>
+    </div>
+    <a routerLink="/admin/pages/new" class="btn primary lg">
+      <span>+</span> Nova Página
+    </a>
+  </header>
+
+  <div *ngIf="loading" class="center-box card">
+    <div class="spinner"></div>
+    <p class="muted">Buscando páginas...</p>
+  </div>
+
+  <div *ngIf="error" class="error-banner card" style="background: #FEF2F2; color: #DC2626; padding: 20px; text-align: center; margin-bottom: 20px;">
+    {{ error }}
+  </div>
+
+  <div class="table-container" *ngIf="!loading && pages.length">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Título</th>
+          <th>Status</th>
+          <th>Idioma</th>
+          <th style="text-align: right;">Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let p of pages">
+          <td>
+            <div style="font-weight: 600;">{{ p.title }}</div>
+            <div class="muted" style="font-size: 0.8rem;">/pages/{{ p.slug }}</div>
+          </td>
+          <td>
+            <span class="badge" [style.background]="p.status === 'published' ? '#DCFCE7' : '#F1F5F9'" [style.color]="p.status === 'published' ? '#166534' : '#475569'">
+              {{ p.status === 'published' ? '🚀 Ativa' : '📝 Rascunho' }}
+            </span>
+          </td>
+          <td>
+            <span class="badge">{{ p.lang.toUpperCase() || 'PT' }}</span>
+          </td>
+          <td style="text-align: right;">
+            <div class="actions" style="display: flex; gap: 8px; justify-content: flex-end;">
+              <a class="btn sm outline" [routerLink]="['/pages', p.slug]" target="_blank">👁️ Ver</a>
+              <a class="btn sm" [routerLink]="['/admin/pages', p.slug]">✏️ Editar</a>
+              <button class="btn danger sm" (click)="delete(p.id!)">🗑️ Eliminar</button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div *ngIf="!loading && !pages.length" class="empty card center-box">
+    <div style="font-size: 3rem; margin-bottom: 20px;">📄</div>
+    <h3>Nenhuma página encontrada</h3>
+    <p class="muted">Crie páginas como "Sobre Nós" ou "Contacto".</p>
+    <a routerLink="/admin/pages/new" class="btn primary mt-4">Criar Primeira Página</a>
+  </div>
+</div>

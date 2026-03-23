@@ -1,0 +1,70 @@
+<div class="admin-wrapper">
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <img src="logo.png" alt="Logo" class="sidebar-logo">
+      <div class="sidebar-title">
+        <h3>protoAmb</h3>
+        <p>Admin Panel</p>
+      </div>
+    </div>
+    
+    <div class="view-site-link">
+      <a href="/" target="_blank" class="btn btn-view-site">🌐 Ir para o Site</a>
+    </div>
+
+    <nav class="menu">
+      <a routerLink="/admin/dashboard" routerLinkActive="active">
+        <span>📊</span> Dashboard
+      </a>
+      <a routerLink="/admin/pages" routerLinkActive="active">
+        <span>📄</span> Páginas
+      </a>
+      <a routerLink="/admin/posts" routerLinkActive="active">
+        <span>✍️</span> Publicações
+      </a>
+      <a routerLink="/admin/biodiversity" routerLinkActive="active">
+        <span>🌿</span> Biodiversidade
+      </a>
+      <a routerLink="/admin/areas" routerLinkActive="active">
+        <span>🗺️</span> Áreas Protegidas
+      </a>
+      <a routerLink="/admin/menus" routerLinkActive="active">
+        <span>🔗</span> Menus
+      </a>
+      <a routerLink="/admin/complaints" routerLinkActive="active">
+        <span>📢</span> Denúncias
+      </a>
+      <a routerLink="/admin/settings" routerLinkActive="active">
+        <span>⚙️</span> Configurações
+      </a>
+      <a routerLink="/admin/media" routerLinkActive="active">
+        <span>🖼️</span> Media
+      </a>
+    </nav>
+
+    <div style="margin-top: auto; padding: 20px 10px; opacity: 0.6; font-size: 0.8rem; border-top: 1px solid rgba(255,255,255,0.1);">
+      <p style="margin:0">Guiné-Bissau</p>
+      <p style="margin:5px 0 0">Unidade • Luta • Progresso</p>
+    </div>
+  </aside>
+
+  <div class="content-wrapper">
+    <header class="top-bar">
+      <div class="breadcrumb">
+        <span style="color: var(--ink-muted); font-size: 0.9rem;">Admin</span> / 
+        <strong style="color: var(--brand);">Painel de Controlo</strong>
+      </div>
+      <div class="user-profile" style="display: flex; align-items: center; gap: 15px;">
+        <div style="text-align: right;">
+          <div style="font-weight: 600; font-size: 0.9rem;">Administrador</div>
+          <div style="font-size: 0.75rem; color: var(--ink-muted);">admin@protoamb.gw</div>
+        </div>
+        <button class="btn ghost sm" style="padding: 5px; border: none; font-size: 1.2rem;">👤</button>
+      </div>
+    </header>
+
+    <main class="content">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>
