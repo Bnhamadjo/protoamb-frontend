@@ -1,13 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { DepartmentItem, HomeActionCard, HomeSliderItem, PlatformModuleItem, SettingsService } from '../../services/settings.service';
+import { DepartmentItem, HomeActionCard, HomeSliderItem, HubStats, PlatformModuleItem, SettingsService, SiteSettings } from '../../services/settings.service';
 import { MediaPickerComponent, MediaPickerSelection } from '../../shared/media-picker/media-picker.component';
 import { ToastService } from '../../services/toast.service';
 
 @Component({
-  standalone: true,
+  standalone: true, //
   selector: 'app-settings-form',
   imports: [CommonModule, FormsModule, RouterLink, MediaPickerComponent],
   template: `
@@ -428,25 +428,15 @@ import { ToastService } from '../../services/toast.service';
   `]
 })
 export class SettingsFormComponent implements OnInit {
-  settings: {
-    site_name: string;
-    logo_header: string;
-    logo_footer: string;
+  settings: SiteSettings & {
     active_languages: string[];
-    home_slider: Array<HomeSliderItem & { uploading?: boolean }>;
-    home_action_cards: Array<HomeActionCard & { uploading?: boolean }>;
-    platform_tagline: string;
-    platform_summary: string;
-    platform_cta_text: string;
-    platform_cta_link: string;
-    target_audiences: string[];
     solution_modules: PlatformModuleItem[];
     state_departments: DepartmentItem[];
-    about_section_title: string;
-    about_section_text: string;
-    about_section_button_text: string;
-    about_section_button_link: string;
-    about_section_image: string;
+    target_audiences: string[];
+    home_slider: Array<HomeSliderItem & { uploading?: boolean }>;
+    home_action_cards: Array<HomeActionCard & { uploading?: boolean }>;
+    water_hub_stats: HubStats;
+    agriculture_hub_stats: HubStats;
   } = {
     site_name: '',
     logo_header: '',
@@ -471,10 +461,11 @@ export class SettingsFormComponent implements OnInit {
   };
 
   loading = true;
-  saving = false;
+  saving = false; //
   pickerOpen = false;
   pickerTitle = '';
   audienceDraft = '';
+
   pickerTarget: 'logo_header' | 'logo_footer' | 'about_section_image' | 'slide' | 'action_card' = 'logo_header';
   pickerIndex = -1;
 
@@ -483,46 +474,10 @@ export class SettingsFormComponent implements OnInit {
     private toast: ToastService
   ) {}
 
+
   ngOnInit(): void {
     this.loadSettings();
   }
-
-  loadSettings(): void {
-    this.settingsService.getSettings().subscribe({
-      next: (res) => {
-        this.settings.site_name = res.site_name || '';
-        this.settings.logo_header = res.logo_header || '';
-        this.settings.logo_footer = res.logo_footer || '';
-        this.settings.active_languages = res.active_languages || ['pt'];
-        this.settings.home_slider = (res.home_slider || []).map((slide) => ({ ...slide, uploading: false }));
-        this.settings.home_action_cards = (res.home_action_cards?.length ? res.home_action_cards : this.createDefaultActionCards())
-          .map((card) => ({ ...card, uploading: false }));
-        this.settings.platform_tagline = res.platform_tagline || 'Plataforma digital de gestao ambiental e agricola';
-        this.settings.platform_summary = res.platform_summary || 'Centralize fiscalizacao, extensao agricola, conteudo tecnico, bibliotecas documentais e colaboracao interdepartamental numa unica solucao estatal.';
-        this.settings.platform_cta_text = res.platform_cta_text || 'Explorar a plataforma';
-        this.settings.platform_cta_link = res.platform_cta_link || '/solutions';
-        this.settings.target_audiences = res.target_audiences?.length ? res.target_audiences : this.createDefaultAudiences();
-        this.settings.solution_modules = res.solution_modules?.length ? res.solution_modules : this.createDefaultSolutionModules();
-        this.settings.state_departments = res.state_departments?.length ? res.state_departments : this.createDefaultDepartments();
-        this.settings.about_section_title = res.about_section_title || 'Sobre o MINISTERIO';
-        this.settings.about_section_text = res.about_section_text || 'MINISTERIO do Ambiente e Biodiversidade tem como missao a promocao do desenvolvimento sustentavel atraves da preservacao, protecao e conservacao do ambiente e da biodiversidade na Guine-Bissau.';
-        this.settings.about_section_button_text = res.about_section_button_text || 'Ver Missao e Visao';
-        this.settings.about_section_button_link = res.about_section_button_link || '/pages/sobre-nos';
-        this.settings.about_section_image = res.about_section_image || '';
-        // Hub stats — use stored values or empty (components use their own hardcoded fallbacks)
-        this.settings.water_hub_stats = res.water_hub_stats || { label1: '', value1: undefined, label2: '', value2: undefined, label3: '', value3: undefined, label4: '', value4: undefined };
-        this.settings.agriculture_hub_stats = res.agriculture_hub_stats || { label1: '', value1: undefined, label2: '', value2: undefined, label3: '', value3: undefined, label4: '', value4: undefined };
-        this.audienceDraft = this.settings.target_audiences.join(', ');
-        this.loading = false;
-      },
-      error: (err) => {
-        this.loading = false;
-        console.error('Settings load error:', err);
-        this.toast.error('Erro ao carregar configuracoes.');
-      }
-    });
-  }
-
   openImagePicker(
     target: 'logo_header' | 'logo_footer' | 'about_section_image' | 'slide' | 'action_card',
     title: string,
@@ -536,9 +491,13 @@ export class SettingsFormComponent implements OnInit {
 
   onImageSelected(selection: MediaPickerSelection): void {
     if (this.pickerTarget === 'slide' && this.pickerIndex >= 0) {
-      this.settings.home_slider[this.pickerIndex].image = selection.url;
+      if (this.settings.home_slider[this.pickerIndex]) {
+        this.settings.home_slider[this.pickerIndex].image = selection.url;
+      }
     } else if (this.pickerTarget === 'action_card' && this.pickerIndex >= 0) {
-      this.settings.home_action_cards[this.pickerIndex].image = selection.url;
+      if (this.settings.home_action_cards[this.pickerIndex]) {
+        this.settings.home_action_cards[this.pickerIndex].image = selection.url;
+      }
     } else if (this.pickerTarget === 'logo_header') {
       this.settings.logo_header = selection.url;
     } else if (this.pickerTarget === 'logo_footer') {
@@ -598,28 +557,7 @@ export class SettingsFormComponent implements OnInit {
     this.settings.state_departments.splice(index, 1);
   }
 
-  private settingsType: {
-    site_name: string;
-    logo_header: string;
-    logo_footer: string;
-    active_languages: string[];
-    home_slider: Array<import('../../services/settings.service').HomeSliderItem & { uploading?: boolean }>;
-    home_action_cards: Array<import('../../services/settings.service').HomeActionCard & { uploading?: boolean }>;
-    platform_tagline: string;
-    platform_summary: string;
-    platform_cta_text: string;
-    platform_cta_link: string;
-    target_audiences: string[];
-    solution_modules: import('../../services/settings.service').PlatformModuleItem[];
-    state_departments: import('../../services/settings.service').DepartmentItem[];
-    about_section_title: string;
-    about_section_text: string;
-    about_section_button_text: string;
-    about_section_button_link: string;
-    about_section_image: string;
-    water_hub_stats: import('../../services/settings.service').HubStats;
-    agriculture_hub_stats: import('../../services/settings.service').HubStats;
-  } = this.settings as any;
+
 
   save(): void {
     this.saving = true;
@@ -630,8 +568,14 @@ export class SettingsFormComponent implements OnInit {
 
     this.settingsService.updateSettings({
       ...this.settings,
-      home_slider: this.settings.home_slider.map(({ uploading, ...slide }) => slide),
-      home_action_cards: this.settings.home_action_cards.map(({ uploading, ...card }) => card)
+      home_slider: this.settings.home_slider.map((item: any) => {
+        const { uploading, ...rest } = item;
+        return rest;
+      }),
+      home_action_cards: this.settings.home_action_cards.map((item: any) => {
+        const { uploading, ...rest } = item;
+        return rest;
+      })
     }).subscribe({
       next: () => {
         this.settingsService.clearCache();
@@ -645,33 +589,81 @@ export class SettingsFormComponent implements OnInit {
     });
   }
 
-  private createDefaultActionCards(): HomeActionCard[] {
+  loadSettings(): void {
+    this.settingsService.getSettings().subscribe({
+      next: (res) => {
+        this.settings.site_name = res.site_name || '';
+        this.settings.logo_header = res.logo_header || '';
+        this.settings.logo_footer = res.logo_footer || '';
+        this.settings.active_languages = res.active_languages || ['pt'];
+        this.settings.home_slider = (res.home_slider || []).map((slide) => ({ ...slide, uploading: false }));
+        this.settings.home_action_cards = (res.home_action_cards?.length ? res.home_action_cards : this.createDefaultActionCards())
+          .map((card) => ({ ...card, uploading: false }));
+        this.settings.platform_tagline = res.platform_tagline || 'Plataforma digital de gestao ambiental e agricola';
+        this.settings.platform_summary = res.platform_summary || 'Centralize fiscalizacao, extensao agricola, conteudo tecnico, bibliotecas documentais e colaboracao interdepartamental numa unica solucao estatal.';
+        this.settings.platform_cta_text = res.platform_cta_text || 'Explorar a plataforma';
+        this.settings.platform_cta_link = res.platform_cta_link || '/solutions';
+        this.settings.target_audiences = res.target_audiences?.length ? res.target_audiences : this.createDefaultAudiences();
+        this.settings.solution_modules = res.solution_modules?.length ? res.solution_modules : this.createDefaultSolutionModules();
+        this.settings.state_departments = res.state_departments?.length ? res.state_departments : this.createDefaultDepartments();
+        this.settings.about_section_title = res.about_section_title || 'Sobre o MINISTERIO';
+        this.settings.about_section_text = res.about_section_text || 'MINISTERIO do Ambiente e Biodiversidade tem como missao a promocao do desenvolvimento sustentavel atraves da preservacao, protecao e conservacao do ambiente e da biodiversidade na Guine-Bissau.';
+        this.settings.about_section_button_text = res.about_section_button_text || 'Ver Missao e Visao';
+        this.settings.about_section_button_link = res.about_section_button_link || '/pages/sobre-nos';
+        this.settings.about_section_image = res.about_section_image || '';
+        // Hub stats — use stored values or empty (components use their own hardcoded fallbacks)
+        this.settings.water_hub_stats = res.water_hub_stats || { label1: '', value1: undefined, label2: '', value2: undefined, label3: '', value3: undefined, label4: '', value4: undefined };
+        this.settings.agriculture_hub_stats = res.agriculture_hub_stats || { label1: '', value1: undefined, label2: '', value2: undefined, label3: '', value3: undefined, label4: '', value4: undefined };
+        this.audienceDraft = this.settings.target_audiences.join(', ');
+        this.loading = false;
+      },
+      error: (err) => {
+        this.loading = false;
+        console.error('Settings load error:', err);
+        this.toast.error('Erro ao carregar configuracoes.');
+      }
+    });
+  }
+
+  //
+  // The createDefaultActionCards method is a public method that returns an array of HomeActionCard objects.
+  // It provides default values for the action cards displayed on the home page.
+  public createDefaultActionCards(): HomeActionCard[] {
     return [
-      { icon: 'Den', title: 'Denuncias Ambientais', subtitle: 'Reporte irregularidades', link: '/denuncias' },
-      { icon: 'Bio', title: 'Areas Protegidas', subtitle: 'Explore a biodiversidade', link: '/biodiversity' },
-      { icon: 'Lei', title: 'Legislacao Ambiental', subtitle: 'Conheca as leis', link: '/posts' },
-      { icon: 'Dados', title: 'Dados e Estatisticas', subtitle: 'Relatorios atualizados', link: '/biodiversity' }
+      { icon: 'Den', title: 'Denuncias Ambientais', subtitle: 'Reporte irregularidades', link: '/denuncias' }, //
+      { icon: 'Bio', title: 'Areas Protegidas', subtitle: 'Explore a biodiversidade', link: '/biodiversity' }, //
+      { icon: 'Lei', title: 'Legislacao Ambiental', subtitle: 'Conheca as leis', link: '/posts' }, //
+      { icon: 'Dados', title: 'Dados e Estatisticas', subtitle: 'Relatorios atualizados', link: '/biodiversity' } //
     ];
   }
 
+  //
+  // The createDefaultAudiences method is a private method that returns an array of strings.
+  // It provides default target audiences for the platform.
   private createDefaultAudiences(): string[] {
-    return ['Tecnicos ambientais', 'Extensionistas agricolas', 'Gestores publicos', 'Departamentos parceiros'];
+    return ['Tecnicos ambientais', 'Extensionistas agricolas', 'Gestores publicos', 'Departamentos parceiros']; //
   }
 
+  //
+  // The createDefaultSolutionModules method is a private method that returns an array of PlatformModuleItem objects.
+  // It provides default solution modules for the MAB portal.
   private createDefaultSolutionModules(): PlatformModuleItem[] {
     return [
-      { name: 'Fiscalizacao ambiental', summary: 'Registo de ocorrencias, missoes, evidencias e acompanhamento tecnico em campo.', link: '/denuncias', audience: 'Inspecao e controlo', status: 'active' },
-      { name: 'Extensao agricola', summary: 'Publicacao de orientacoes, campanhas, boas praticas e materiais de apoio a produtores.', link: '/posts', audience: 'Agricultura e desenvolvimento rural', status: 'pilot' },
-      { name: 'Biblioteca tecnico-legal', summary: 'Centralize legislacao, manuais, pareceres, relatorios e anexos PDF numa base unica.', link: '/posts', audience: 'Direcoes tecnicas e juridicas', status: 'active' },
-      { name: 'Gestao interdepartamental', summary: 'Estruture paginas, menus e servicos para novos departamentos sem refazer o portal.', link: '/pages/sobre-nos', audience: 'Administracao do Estado', status: 'planned' }
+      { name: 'Fiscalizacao ambiental', summary: 'Registo de ocorrencias, missoes, evidencias e acompanhamento tecnico em campo.', link: '/denuncias', audience: 'Inspecao e controlo', status: 'active' }, //
+      { name: 'Extensao agricola', summary: 'Publicacao de orientacoes, campanhas, boas praticas e materiais de apoio a produtores.', link: '/posts', audience: 'Agricultura e desenvolvimento rural', status: 'pilot' }, //
+      { name: 'Biblioteca tecnico-legal', summary: 'Centralize legislacao, manuais, pareceres, relatorios e anexos PDF numa base unica.', link: '/posts', audience: 'Direcoes tecnicas e juridicas', status: 'active' }, //
+      { name: 'Gestao interdepartamental', summary: 'Estruture paginas, menus e servicos para novos departamentos sem refazer o portal.', link: '/pages/sobre-nos', audience: 'Administracao do Estado', status: 'planned' } //
     ];
   }
 
+  //
+  // The createDefaultDepartments method is a private method that returns an array of DepartmentItem objects.
+  // It provides default state departments for the portal.
   private createDefaultDepartments(): DepartmentItem[] {
     return [
-      { name: 'Ambiente e Biodiversidade', summary: 'Coordena conservacao, fiscalizacao e monitorizacao dos recursos naturais.', focus: 'Conservacao, clima, fiscalizacao', link: '/biodiversity' },
-      { name: 'Agricultura Sustentavel', summary: 'Pode operar campanhas, extensao, conteudo tecnico e programas de resiliencia agricola.', focus: 'Producao, solos, extensao rural', link: '/posts' },
-      { name: 'Recursos Hidricos e Solo', summary: 'Acolhe dados, publicacoes e instrumentos de gestao territorial e uso da terra.', focus: 'Agua, erosao, bacias, ordenamento', link: '/areas' }
+      { name: 'Ambiente e Biodiversidade', summary: 'Coordena conservacao, fiscalizacao e monitorizacao dos recursos naturais.', focus: 'Conservacao, clima, fiscalizacao', link: '/biodiversity' }, //
+      { name: 'Agricultura Sustentavel', summary: 'Pode operar campanhas, extensao, conteudo tecnico e programas de resiliencia agricola.', focus: 'Producao, solos, extensao rural', link: '/posts' }, //
+      { name: 'Recursos Hidricos e Solo', summary: 'Acolhe dados, publicacoes e instrumentos de gestao territorial e uso da terra.', focus: 'Agua, erosao, bacias, ordenamento', link: '/areas' } //
     ];
   }
 }
