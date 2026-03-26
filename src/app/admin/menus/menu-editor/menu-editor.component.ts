@@ -4,6 +4,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CdkDragDrop, DragDropModule, moveItemInArray } from '@angular/cdk/drag-drop';
 import { MenuService, Menu, MenuItem } from '../services/menu.service';
+import { ToastService } from '../../../services/toast.service';
 
 @Component({
   standalone: true,
@@ -82,7 +83,8 @@ export class MenuEditorComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private menuService: MenuService
+    private menuService: MenuService,
+    private toast: ToastService
   ) {}
 
   ngOnInit(): void {
@@ -131,7 +133,7 @@ export class MenuEditorComponent implements OnInit {
     this.menuService.updateItems(this.menuId, this.items).subscribe({
       next: () => {
         this.saving = false;
-        alert('Menu atualizado com sucesso!');
+        this.toast.success('Menu atualizado com sucesso.');
       },
       error: () => {
         this.error = 'Erro ao salvar os itens do menu.';

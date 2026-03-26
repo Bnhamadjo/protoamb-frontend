@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { timeout } from 'rxjs/operators';
 
 export interface MenuItem {
   id?: number;
@@ -29,7 +30,7 @@ export class MenuService {
   constructor(private http: HttpClient) {}
 
   all(params?: { lang?: string, location?: string }): Observable<Menu[]> {
-    return this.http.get<Menu[]>(this.API, { params });
+    return this.http.get<Menu[]>(this.API, { params }).pipe(timeout(30000));
   }
 
   show(id: number): Observable<Menu> {

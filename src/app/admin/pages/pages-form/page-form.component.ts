@@ -4,12 +4,13 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { QuillEditorComponent } from 'ngx-quill';
 import { PageService, Page } from '../services/page.service';
-import { UploadService } from '../../../services/upload.service';
+import { MediaPickerComponent, MediaPickerSelection } from '../../../shared/media-picker/media-picker.component';
+import { ToastService } from '../../../services/toast.service';
 
 @Component({
   standalone: true,
   selector: 'app-page-form',
-  imports: [CommonModule, FormsModule, RouterLink, QuillEditorComponent],
+  imports: [CommonModule, FormsModule, RouterLink, QuillEditorComponent, MediaPickerComponent],
   templateUrl: './page-form.component.html',
   styleUrls: ['./page-form.component.scss']
 })
@@ -18,7 +19,7 @@ export class PagesFormComponent implements OnInit {
   page: Page = {
     title: '',
     content: '',
-    status: 'draft',
+    status: 'published',
     lang: 'pt',
     featured_image: null,
     parent_id: null
@@ -26,15 +27,15 @@ export class PagesFormComponent implements OnInit {
   pages: Page[] = [];
   loading = false;
   saving = false;
-  uploading = false;
   error = '';
   dirty = false;
+  imagePickerOpen = false;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private service: PageService,
-    private uploadService: UploadService
+    private toast: ToastService
   ) {}
 
   ngOnInit(): void {
@@ -51,25 +52,17 @@ export class PagesFormComponent implements OnInit {
     }
   }
 
-  onFileSelected(event: any): void {
-    const file = event.target.files[0];
-    if (file) {
-      this.uploading = true;
-      this.uploadService.upload(file).subscribe({
-        next: (res) => {
-          this.page.featured_image = res.url;
-          this.uploading = false;
-        },
-        error: () => {
-          this.error = 'Falha ao fazer upload da imagem.';
-          this.uploading = false;
-        }
-      });
-    }
-  }
-
   removeImage(): void {
     this.page.featured_image = null;
+  }
+
+  openImagePicker(): void {
+    this.imagePickerOpen = true;
+  }
+
+  onImageSelected(selection: MediaPickerSelection): void {
+    this.page.featured_image = selection.url;
+    this.imagePickerOpen = false;
   }
 
   loadPages(): void {
@@ -87,11 +80,14 @@ export class PagesFormComponent implements OnInit {
       : this.service.update(this.page.id!, this.page);
 
     action$.subscribe({
-      next: () => this.router.navigate(['/admin/pages']),
+      next: () => {
+        this.toast.success(this.slug === 'new' || !this.slug ? 'Pagina criada com sucesso.' : 'Pagina atualizada com sucesso.');
+        this.router.navigate(['/admin/pages']);
+      },
       error: (err) => { 
         console.error('Save error:', err);
         this.error = 'Não foi possível guardar a página. Verifique a ligação.'; 
       }
     });
   }
-}
+}

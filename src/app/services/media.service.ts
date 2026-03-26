@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
+import { API_BASE } from '../api-config';
+
 export interface MediaFile {
   id?: number;
   url: string;
@@ -14,8 +16,8 @@ export interface MediaFile {
 
 @Injectable({ providedIn: 'root' })
 export class MediaService {
-  private readonly API = 'http://127.0.0.1:8000/api/upload/files';
-  private readonly DELETE_API = 'http://127.0.0.1:8000/api/upload/file';
+  private readonly API = API_BASE + '/upload/files';
+  private readonly DELETE_API = API_BASE + '/upload/file';
 
   constructor(private http: HttpClient) {}
 

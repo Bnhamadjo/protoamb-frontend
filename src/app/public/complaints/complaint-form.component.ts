@@ -3,6 +3,9 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 
+import { API_BASE } from '../../api-config';
+import { ToastService } from '../../services/toast.service';
+
 @Component({
   standalone: true,
   selector: 'app-public-complaint-form',
@@ -85,14 +88,26 @@ export class PublicComplaintFormComponent {
   submitting = false;
   success = false;
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private toast: ToastService
+  ) {}
 
   submit(f: any): void {
     this.submitting = true;
-    this.http.post('http://127.0.0.1:8000/api/denuncias', this.form).subscribe({
+    const payload = {
+      tipo_infracao: this.form.titulo,
+      descricao: this.form.descricao,
+      local: this.form.localizacao,
+      nome: this.form.nome,
+      contato: this.form.contato
+    };
+
+    this.http.post(`${API_BASE}/denuncias`, payload).subscribe({
       next: () => {
         this.submitting = false;
         this.success = true;
+        this.toast.success('Denuncia enviada com sucesso.');
         f.reset();
       },
       error: () => {

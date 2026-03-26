@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { MenuService, Menu, MenuItem } from '../../admin/menus/services/menu.service';
@@ -26,8 +26,6 @@ import { MenuService, Menu, MenuItem } from '../../admin/menus/services/menu.ser
           </ul>
         </li>
       </ul>
-      
-      <div *ngIf="loading" class="menu-loading">...</div>
     </nav>
   `,
   styles: [`
@@ -95,11 +93,9 @@ import { MenuService, Menu, MenuItem } from '../../admin/menus/services/menu.ser
       color: var(--brand);
       padding-left: 25px;
     }
-
-    .menu-loading { opacity: 0.5; font-size: 0.8rem; }
   `]
 })
-export class PublicMenuComponent implements OnInit {
+export class PublicMenuComponent implements OnInit, OnChanges {
   @Input() location: string = 'header';
   @Input() lang: string = 'pt';
   @Input() customClass: string = '';
@@ -111,6 +107,12 @@ export class PublicMenuComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadMenu();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if ((changes['location'] && !changes['location'].firstChange) || (changes['lang'] && !changes['lang'].firstChange)) {
+      this.loadMenu();
+    }
   }
 
   loadMenu(): void {

@@ -19,6 +19,16 @@ export class AuthService {
   }
 
   getToken()   { return localStorage.getItem('token'); }
+  getUser()    { 
+    const token = this.getToken();
+    if (!token) return null;
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return payload;
+    } catch {
+      return null;
+    }
+  }
   isLogged()   { return !!this.getToken(); }
   logout()     { localStorage.removeItem('token'); }
 }

@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ComplaintService, Complaint } from '../services/complaint.service';
+import { ToastService } from '../../../services/toast.service';
 
 @Component({
   standalone: true,
@@ -91,7 +92,8 @@ export class ComplaintsDetailComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private service: ComplaintService
+    private service: ComplaintService,
+    private toast: ToastService
   ) {}
 
   ngOnInit(): void {
@@ -105,8 +107,15 @@ export class ComplaintsDetailComponent implements OnInit {
     if (!this.complaint) return;
     this.updating = true;
     this.service.updateStatus(this.complaint.id!, status).subscribe({
-      next: (res) => { this.complaint = res; this.updating = false; },
-      error: () => { alert('Erro ao atualizar status.'); this.updating = false; }
+      next: (res) => {
+        this.complaint = res;
+        this.updating = false;
+        this.toast.success('Status da denuncia atualizado com sucesso.');
+      },
+      error: () => {
+        this.toast.error('Erro ao atualizar status.');
+        this.updating = false;
+      }
     });
   }
 

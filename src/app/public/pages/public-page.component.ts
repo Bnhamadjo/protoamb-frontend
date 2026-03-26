@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { API_BASE } from '../../api-config';
+import { SeoService } from '../../services/seo.service';
 
 @Component({
   standalone: true,
@@ -38,7 +39,15 @@ import { API_BASE } from '../../api-config';
   styles: [`
     .page-content ::ng-deep img { max-width: 100%; border-radius: var(--radius-sm); margin: 20px 0; }
     .page-content ::ng-deep h2 { margin-top: 40px; color: var(--brand); }
-    .page-content ::ng-deep p { margin-bottom: 20px; }
+    .page-content ::ng-deep p { margin-bottom: 20px; text-align: justify; }
+    .page-content ::ng-deep li { text-align: justify; line-height: 1.8; }
+    .page-content ::ng-deep blockquote {
+      margin: 24px 0;
+      padding: 18px 22px;
+      background: #f6f8f5;
+      border-left: 4px solid var(--primary);
+      border-radius: 0 16px 16px 0;
+    }
     .container { max-width: 1000px; margin: 0 auto; padding: 0 20px; }
   `]
 })
@@ -46,7 +55,12 @@ export class PublicPageComponent implements OnInit {
   page: any;
   loading = true;
 
-  constructor(private route: ActivatedRoute, private http: HttpClient, private router: Router) {}
+  constructor(
+    private route: ActivatedRoute,
+    private http: HttpClient,
+    private router: Router,
+    private seo: SeoService
+  ) {}
 
   ngOnInit(): void {
     this.route.params.subscribe(params => {
@@ -59,11 +73,32 @@ export class PublicPageComponent implements OnInit {
       next: (res) => {
         this.page = res;
         this.loading = false;
+        this.seo.updatePage({
+          title: res.title || 'Pagina institucional',
+          description: this.getDescription(res.content),
+          image: res.featured_image || '/logo.png'
+        });
       },
       error: () => {
         this.loading = false;
         this.router.navigate(['/404']);
       }
     });
+  }
+
+  private getDescription(content?: string): string {
+    const plain = this.toPlainText(content || '');
+    return plain.slice(0, 160) || 'Conheca o conteudo institucional publicado no portal ProtoAmb.';
+  }
+
+  private toPlainText(value: string): string {
+    const withoutTags = value.replace(/<[^>]+>/g, ' ');
+    const textarea = document.createElement('textarea');
+    textarea.innerHTML = withoutTags;
+
+    return textarea.value
+      .replace(/\u00a0/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
   }
 }

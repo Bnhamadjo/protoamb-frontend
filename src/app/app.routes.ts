@@ -2,7 +2,7 @@ import { Routes } from '@angular/router';
 import { authGuard } from './core/auth-guard';
 import { LayoutComponent } from './admin/layout/layout';
 import { DashboardComponent } from './admin/dashboard/dashboard';
-import { LoginComponent } from './auth/login/login';
+import { LoginComponent } from './auth/login/login.component';
 import { PublicLayoutComponent } from './public/layout/public-layout.component';
 
 export const routes: Routes = [
@@ -15,7 +15,7 @@ export const routes: Routes = [
     children: [
       { 
         path: '', 
-        loadComponent: () => import('./public/home/home.component').then(m => m.PublicHomeComponent) 
+        loadComponent: () => import('./public/home/public-home.component').then(m => m.PublicHomeComponent) 
       },
       { 
         path: 'pages/:slug', 
@@ -24,6 +24,18 @@ export const routes: Routes = [
       { 
         path: 'biodiversity', 
         loadComponent: () => import('./public/biodiversity/biodiversity.component').then(m => m.PublicBiodiversityComponent) 
+      },
+      {
+        path: 'areas',
+        loadComponent: () => import('./public/areas/areas.component').then(m => m.PublicAreasComponent)
+      },
+      {
+        path: 'solutions',
+        loadComponent: () => import('./public/solutions/solutions.component').then(m => m.PublicSolutionsComponent)
+      },
+      {
+        path: 'solutions/:kind/:slug',
+        loadComponent: () => import('./public/solutions/solution-detail.component').then(m => m.SolutionDetailComponent)
       },
       { 
         path: 'posts', 
@@ -36,6 +48,26 @@ export const routes: Routes = [
       { 
         path: 'denuncias', 
         loadComponent: () => import('./public/complaints/complaint-form.component').then(m => m.PublicComplaintFormComponent) 
+      },
+      { 
+        path: 'ocorrencias', 
+        loadComponent: () => import('./public/inspection/public-inspection-hub.component').then(m => m.PublicInspectionHubComponent) 
+      },
+      { 
+        path: 'ocorrencias/relatar', 
+        loadComponent: () => import('./public/inspection/public-ocorrencia-form.component').then(m => m.PublicOcorrenciaFormComponent) 
+      },
+      {
+        path: 'biblioteca-legal',
+        loadComponent: () => import('./public/legal/legal-library.component').then(m => m.LegalLibraryComponent)
+      },
+      {
+        path: 'extensao-agricola',
+        loadComponent: () => import('./public/agriculture/agriculture-hub.component').then(m => m.AgricultureHubComponent)
+      },
+      {
+        path: 'recursos-hidricos',
+        loadComponent: () => import('./public/water/water-hub.component').then(m => m.WaterHubComponent)
       },
       {
         path: '404',
@@ -106,6 +138,14 @@ export const routes: Routes = [
         path: 'areas', 
         loadComponent: () => import('./admin/areas/areas-list/areas-list.component').then(m => m.AreasListComponent)
       },
+      {
+        path: 'areas/new',
+        loadComponent: () => import('./admin/areas/areas-form/areas-form.component').then(m => m.AreasFormComponent)
+      },
+      {
+        path: 'areas/:id',
+        loadComponent: () => import('./admin/areas/areas-form/areas-form.component').then(m => m.AreasFormComponent)
+      },
 
       // Gestão de Menus
       {
@@ -129,10 +169,63 @@ export const routes: Routes = [
         path: 'complaints', 
         loadComponent: () => import('./admin/complaints/complaints-list/complaints-list.component').then(m => m.ComplaintsListComponent)
       },
+      {
+        path: 'complaints/:id',
+        loadComponent: () => import('./admin/complaints/complaints-detail/complaints-detail.component').then(m => m.ComplaintsDetailComponent)
+      },
 
+      // Inspeção e Controlo
+      {
+        path: 'inspection',
+        children: [
+          // Ocorrências
+          { 
+            path: 'ocorrencias', 
+            loadComponent: () => import('./admin/inspection/ocorrencias-list/ocorrencias-list.component').then(m => m.OcorrenciasListComponent) 
+          },
+          { 
+            path: 'ocorrencias/new', 
+            loadComponent: () => import('./admin/inspection/ocorrencia-form/ocorrencia-form.component').then(m => m.OcorrenciaFormComponent) 
+          },
+          { 
+            path: 'ocorrencias/:id', 
+            loadComponent: () => import('./admin/inspection/ocorrencia-detail/ocorrencia-detail.component').then(m => m.OcorrenciaDetailComponent) 
+          },
+          
+          // Missões
+          { 
+            path: 'missoes', 
+            loadComponent: () => import('./admin/inspection/missoes-list/missoes-list.component').then(m => m.MissoesListComponent) 
+          },
+          { 
+            path: 'missoes/new', 
+            loadComponent: () => import('./admin/inspection/missao-form/missao-form.component').then(m => m.MissaoFormComponent) 
+          },
+          { 
+            path: 'missoes/:id', 
+            loadComponent: () => import('./admin/inspection/missao-detail/missao-detail.component').then(m => m.MissaoDetailComponent) 
+          },
+          
+          // Equipas
+          { 
+            path: 'teams', 
+            loadComponent: () => import('./admin/inspection/teams-list/teams-list.component').then(m => m.TeamsListComponent) 
+          },
+          { 
+            path: 'teams/new', 
+            loadComponent: () => import('./admin/inspection/team-form/team-form.component').then(m => m.TeamFormComponent) 
+          },
+          { 
+            path: 'teams/:id', 
+            loadComponent: () => import('./admin/inspection/team-detail/team-detail.component').then(m => m.TeamDetailComponent) 
+          },
+        ]
+      },
+
+      // Agricultura
       { 
-        path: 'media', 
-        loadComponent: () => import('./admin/media/media-list.component').then(m => m.MediaListComponent)
+        path: 'agricultura', 
+        loadComponent: () => import('./public/agricultura/agricultura.component').then(m => m.AgriculturaComponent)
       },
 
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' }

@@ -4,15 +4,16 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { QuillEditorComponent } from 'ngx-quill';
 import { AreaService, AreaItem } from '../services/area.service';
-import { UploadService } from '../../../services/upload.service';
+import { MediaPickerComponent, MediaPickerSelection } from '../../../shared/media-picker/media-picker.component';
+import { ToastService } from '../../../services/toast.service';
 
 @Component({
   standalone: true,
   selector: 'app-areas-form',
-  imports: [CommonModule, FormsModule, RouterLink, QuillEditorComponent],
+  imports: [CommonModule, FormsModule, RouterLink, QuillEditorComponent, MediaPickerComponent],
   template: `
     <div class="areas-form">
-      <h1>{{ isNew ? 'Nova Área Protegida' : 'Editar Área Protegida' }}</h1>
+      <h1>{{ isNew ? 'Nova Area Protegida' : 'Editar Area Protegida' }}</h1>
 
       <div *ngIf="loading" class="muted">Carregando...</div>
       <div *ngIf="error" class="error">{{ error }}</div>
@@ -20,30 +21,38 @@ import { UploadService } from '../../../services/upload.service';
       <form *ngIf="!loading" (ngSubmit)="save()">
         <div class="grid-2">
           <div>
-            <label>Nome da Área</label>
+            <label>Nome da Area</label>
             <input [(ngModel)]="item.name" name="name" required placeholder="Ex: Parque Nacional de Cantanhez">
           </div>
           <div>
-            <label>Localização</label>
-            <input [(ngModel)]="item.location" name="location" placeholder="Ex: Região de Tombali">
+            <label>Localizacao</label>
+            <input [(ngModel)]="item.location" name="location" placeholder="Ex: Regiao de Tombali">
           </div>
         </div>
 
         <div class="image-upload-section">
-          <label>Imagem da Área</label>
+          <div class="section-head">
+            <div>
+              <label>Imagem da Area</label>
+              <p class="muted">Escolha a partir da galeria. Se nao encontrar, carregue dentro da biblioteca.</p>
+            </div>
+            <button type="button" class="btn outline sm" (click)="openImagePicker()">Abrir galeria</button>
+          </div>
+
           <div *ngIf="item.image_url" class="preview-container">
             <img [src]="item.image_url" alt="Area preview">
-            <button type="button" class="btn danger sm" (click)="removeImage()">Remover Imagem</button>
+            <div class="preview-actions">
+              <button type="button" class="btn outline sm" (click)="openImagePicker()">Trocar pela galeria</button>
+              <button type="button" class="btn danger sm" (click)="removeImage()">Remover imagem</button>
+            </div>
           </div>
+
           <div *ngIf="!item.image_url" class="upload-placeholder">
-            <input type="file" #fileInput hidden (change)="onFileSelected($event)" accept="image/*">
-            <button type="button" class="btn" (click)="fileInput.click()" [disabled]="uploading">
-              {{ uploading ? 'Enviando...' : 'Selecionar Imagem' }}
-            </button>
+            <button type="button" class="btn" (click)="openImagePicker()">Selecionar imagem da galeria</button>
           </div>
         </div>
 
-        <label>Descrição e Contexto</label>
+        <label>Descricao e Contexto</label>
         <quill-editor 
           [(ngModel)]="item.description" 
           name="description" 
@@ -52,8 +61,8 @@ import { UploadService } from '../../../services/upload.service';
 
         <div class="grid-2">
           <div>
-            <label>Superfície (km²)</label>
-            <input [(ngModel)]="item.surface_area" name="surface_area" placeholder="Ex: 1067 km²">
+            <label>Superficie (km2)</label>
+            <input [(ngModel)]="item.surface_area" name="surface_area" placeholder="Ex: 1067 km2">
           </div>
           <div>
             <label>Status</label>
@@ -65,19 +74,30 @@ import { UploadService } from '../../../services/upload.service';
         </div>
 
         <div class="actions">
-          <button type="submit" class="btn primary" [disabled]="saving || uploading">
+          <button type="submit" class="btn primary" [disabled]="saving">
             {{ saving ? 'Salvando...' : 'Salvar' }}
           </button>
           <a class="btn" routerLink="/admin/areas">Voltar</a>
         </div>
       </form>
     </div>
+
+    <app-media-picker
+      [visible]="imagePickerOpen"
+      mode="image"
+      title="Galeria para area protegida"
+      (close)="imagePickerOpen = false"
+      (selected)="onImageSelected($event)">
+    </app-media-picker>
   `,
   styles: [`
     .areas-form { max-width: 900px; }
     .image-upload-section { margin: 16px 0; padding: 16px; border: 1px dashed #cfe0da; border-radius: 10px; background: #fdfdfd; }
+    .section-head { display: flex; justify-content: space-between; gap: 16px; align-items: flex-start; margin-bottom: 12px; }
+    .section-head p { margin: 6px 0 0; }
     .preview-container { display: flex; flex-direction: column; align-items: center; gap: 10px; }
     .preview-container img { max-width: 100%; max-height: 250px; border-radius: 8px; }
+    .preview-actions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
     .actions { display: flex; gap: 10px; margin-top: 24px; }
   `]
 })
@@ -93,14 +113,14 @@ export class AreasFormComponent implements OnInit {
   };
   loading = false;
   saving = false;
-  uploading = false;
   error = '';
+  imagePickerOpen = false;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private areaService: AreaService,
-    private uploadService: UploadService
+    private toast: ToastService
   ) {}
 
   ngOnInit(): void {
@@ -110,24 +130,22 @@ export class AreasFormComponent implements OnInit {
       this.loading = true;
       this.areaService.show(+this.id).subscribe({
         next: (res) => { this.item = res; this.loading = false; },
-        error: () => { this.error = 'Falha ao carregar área.'; this.loading = false; }
-      });
-    }
-  }
-
-  onFileSelected(event: any): void {
-    const file = event.target.files[0];
-    if (file) {
-      this.uploading = true;
-      this.uploadService.upload(file).subscribe({
-        next: (res) => { this.item.image_url = res.url; this.uploading = false; },
-        error: () => { this.error = 'Falha no upload da imagem.'; this.uploading = false; }
+        error: () => { this.error = 'Falha ao carregar area.'; this.loading = false; }
       });
     }
   }
 
   removeImage(): void {
     this.item.image_url = null;
+  }
+
+  openImagePicker(): void {
+    this.imagePickerOpen = true;
+  }
+
+  onImageSelected(selection: MediaPickerSelection): void {
+    this.item.image_url = selection.url;
+    this.imagePickerOpen = false;
   }
 
   save(): void {
@@ -137,8 +155,11 @@ export class AreasFormComponent implements OnInit {
       : this.areaService.update(+this.id!, this.item);
 
     action$.subscribe({
-      next: () => this.router.navigate(['/admin/areas']),
-      error: () => { this.error = 'Erro ao salvar área.'; this.saving = false; }
+      next: () => {
+        this.toast.success(this.isNew ? 'Area guardada com sucesso.' : 'Area atualizada com sucesso.');
+        this.router.navigate(['/admin/areas']);
+      },
+      error: () => { this.error = 'Erro ao salvar area.'; this.saving = false; }
     });
   }
 }

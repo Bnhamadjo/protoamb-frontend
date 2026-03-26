@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { timeout } from 'rxjs/operators';
 
 export interface Page {
   id?: number;
@@ -24,22 +25,22 @@ export class PageService {
   constructor(private http: HttpClient) {}
 
   all(): Observable<Page[]> {
-    return this.http.get<Page[]>(this.API);
+    return this.http.get<Page[]>(this.API).pipe(timeout(15000));
   }
 
   show(slug: string): Observable<Page> {
-    return this.http.get<Page>(`${this.API}/${slug}`);
+    return this.http.get<Page>(`${this.API}/${slug}`).pipe(timeout(15000));
   }
 
   create(data: Page): Observable<Page> {
-    return this.http.post<Page>(this.API, data);
+    return this.http.post<Page>(this.API, data).pipe(timeout(15000));
   }
 
   update(id: number, data: Page): Observable<Page> {
-    return this.http.put<Page>(`${this.API}/${id}`, data);
+    return this.http.put<Page>(`${this.API}/${id}`, data).pipe(timeout(15000));
   }
 
   delete(id: number) {
-    return this.http.delete(`${this.API}/${id}`);
+    return this.http.delete(`${this.API}/${id}`).pipe(timeout(15000));
   }
 }

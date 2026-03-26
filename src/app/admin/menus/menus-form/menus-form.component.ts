@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MenuService, Menu } from '../services/menu.service';
+import { ToastService } from '../../../services/toast.service';
 
 @Component({
   standalone: true,
@@ -67,7 +68,8 @@ export class MenusFormComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private menuService: MenuService
+    private menuService: MenuService,
+    private toast: ToastService
   ) {}
 
   ngOnInit(): void {
@@ -90,6 +92,7 @@ export class MenusFormComponent implements OnInit {
 
     action$.subscribe({
       next: (res) => {
+        this.toast.success(this.isNew ? 'Menu criado com sucesso.' : 'Menu atualizado com sucesso.');
         if (this.isNew) {
            this.router.navigate(['/admin/menus', res.id, 'items']);
         } else {

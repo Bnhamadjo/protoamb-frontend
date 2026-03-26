@@ -4,12 +4,13 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { QuillEditorComponent } from 'ngx-quill';
 import { BiodiversityService, BiodiversityItem } from '../services/biodiversity.service';
-import { UploadService } from '../../../services/upload.service';
+import { MediaPickerComponent, MediaPickerSelection } from '../../../shared/media-picker/media-picker.component';
+import { ToastService } from '../../../services/toast.service';
 
 @Component({
   standalone: true,
   selector: 'app-biodiversity-form',
-  imports: [CommonModule, FormsModule, RouterLink, QuillEditorComponent],
+  imports: [CommonModule, FormsModule, RouterLink, QuillEditorComponent, MediaPickerComponent],
   template: `
     <div class="bio-form">
       <h1>{{ isNew ? 'Nova Entrada' : 'Editar Entrada' }}</h1>
@@ -34,15 +35,23 @@ import { UploadService } from '../../../services/upload.service';
         </div>
 
         <div class="image-upload-section">
-          <label>Imagem</label>
+          <div style="display:flex; justify-content:space-between; gap:16px; align-items:flex-start; margin-bottom:12px;">
+            <div>
+              <label>Imagem</label>
+              <p class="muted" style="margin:6px 0 0;">Escolha sempre da galeria primeiro. Se nao existir, carregue na biblioteca.</p>
+            </div>
+            <button type="button" class="btn outline sm" (click)="openImagePicker()">Abrir galeria</button>
+          </div>
           <div *ngIf="item.image" class="preview-container">
             <img [src]="item.image" alt="Bio preview">
-            <button type="button" class="btn danger sm" (click)="removeImage()">Remover Imagem</button>
+            <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:center;">
+              <button type="button" class="btn outline sm" (click)="openImagePicker()">Trocar pela galeria</button>
+              <button type="button" class="btn danger sm" (click)="removeImage()">Remover Imagem</button>
+            </div>
           </div>
           <div *ngIf="!item.image" class="upload-placeholder">
-            <input type="file" #fileInput hidden (change)="onFileSelected($event)" accept="image/*">
-            <button type="button" class="btn" (click)="fileInput.click()" [disabled]="uploading">
-              {{ uploading ? 'Enviando...' : 'Selecionar Imagem' }}
+            <button type="button" class="btn" (click)="openImagePicker()">
+              Selecionar Imagem da Galeria
             </button>
           </div>
         </div>
@@ -55,13 +64,21 @@ import { UploadService } from '../../../services/upload.service';
         ></quill-editor>
 
         <div class="actions">
-          <button type="submit" class="btn primary" [disabled]="saving || uploading">
+          <button type="submit" class="btn primary" [disabled]="saving">
             {{ saving ? 'Salvando...' : 'Salvar' }}
           </button>
           <a class="btn" routerLink="/admin/biodiversity">Voltar</a>
         </div>
       </form>
     </div>
+
+    <app-media-picker
+      [visible]="imagePickerOpen"
+      mode="image"
+      title="Galeria para biodiversidade"
+      (close)="imagePickerOpen = false"
+      (selected)="onImageSelected($event)">
+    </app-media-picker>
   `,
   styles: [`
     .bio-form { max-width: 900px; }
@@ -81,14 +98,14 @@ export class BiodiversityFormComponent implements OnInit {
   };
   loading = false;
   saving = false;
-  uploading = false;
   error = '';
+  imagePickerOpen = false;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private bioService: BiodiversityService,
-    private uploadService: UploadService
+    private toast: ToastService
   ) {}
 
   ngOnInit(): void {
@@ -103,19 +120,17 @@ export class BiodiversityFormComponent implements OnInit {
     }
   }
 
-  onFileSelected(event: any): void {
-    const file = event.target.files[0];
-    if (file) {
-      this.uploading = true;
-      this.uploadService.upload(file).subscribe({
-        next: (res) => { this.item.image = res.url; this.uploading = false; },
-        error: () => { this.error = 'Falha no upload da imagem.'; this.uploading = false; }
-      });
-    }
-  }
-
   removeImage(): void {
     this.item.image = '';
+  }
+
+  openImagePicker(): void {
+    this.imagePickerOpen = true;
+  }
+
+  onImageSelected(selection: MediaPickerSelection): void {
+    this.item.image = selection.url;
+    this.imagePickerOpen = false;
   }
 
   save(): void {
@@ -125,7 +140,10 @@ export class BiodiversityFormComponent implements OnInit {
       : this.bioService.update(+this.id!, this.item);
 
     action$.subscribe({
-      next: () => this.router.navigate(['/admin/biodiversity']),
+      next: () => {
+        this.toast.success(this.isNew ? 'Entrada criada com sucesso.' : 'Entrada atualizada com sucesso.');
+        this.router.navigate(['/admin/biodiversity']);
+      },
       error: () => { this.error = 'Erro ao salvar entrada.'; this.saving = false; }
     });
   }
