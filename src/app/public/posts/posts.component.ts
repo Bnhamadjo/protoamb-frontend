@@ -102,14 +102,16 @@ import { SeoService } from '../../services/seo.service';
     .filter-bar { display: grid; grid-template-columns: 1.7fr 0.8fr; gap: 16px; padding: 18px; margin-bottom: 18px; border-radius: 22px; }
     .filter-bar label { display: block; font-size: 0.78rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-muted); margin-bottom: 8px; }
     .results-head { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 18px; }
-    .grid-posts { display: flex; flex-direction: column; gap: 30px; }
-    .post-item { display: grid; grid-template-columns: 300px 1fr; overflow: hidden; border-radius: 24px; }
+    .grid-posts { display: grid; grid-template-columns: repeat(2, 1fr); gap: 30px; }
+    .post-item { display: flex; flex-direction: column; overflow: hidden; border-radius: 24px; height: 100%; transition: transform 0.2s; }
+    .post-item:hover { transform: translateY(-4px); box-shadow: var(--shadow); }
+    .post-image { height: 240px; }
     .post-image img { width: 100%; height: 100%; object-fit: cover; }
-    .post-content { padding: 30px; display: flex; flex-direction: column; gap: 15px; }
+    .post-content { padding: 30px; display: flex; flex-direction: column; gap: 15px; flex-grow: 1; }
     .meta { display: flex; gap: 15px; font-size: 0.8rem; color: var(--ink-muted); font-weight: 600; }
     .category { color: var(--primary); text-transform: uppercase; }
-    h2 { font-size: 1.5rem; color: var(--ink); }
-    .excerpt { color: var(--ink-muted); line-height: 1.8; text-align: justify; }
+    h2 { font-size: 1.35rem; color: var(--ink); line-height: 1.3; margin: 0; }
+    .excerpt { color: var(--ink-muted); line-height: 1.6; flex-grow: 1; }
     .sidebar .widget { padding: 25px; }
     .sidebar h4 { margin-bottom: 20px; border-bottom: 2px solid var(--primary); display: inline-block; }
     .sidebar ul { list-style: none; padding: 0; }
@@ -117,7 +119,7 @@ import { SeoService } from '../../services/seo.service';
     .sidebar a { text-decoration: none; color: var(--ink-muted); transition: 0.2s; cursor: pointer; }
     .sidebar a:hover { color: var(--primary); }
     @media (max-width: 980px) {
-      .posts-layout, .filter-bar, .post-item { grid-template-columns: 1fr; }
+      .posts-layout, .filter-bar, .grid-posts { grid-template-columns: 1fr; }
     }
     .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
   `]
@@ -181,7 +183,7 @@ export class PublicPostsComponent implements OnInit {
 
   getExcerpt(post: any): string {
     const content = this.toPlainText(post?.excerpt || post?.body || '');
-    return content.length > 200 ? `${content.slice(0, 200).trim()}...` : content;
+    return content.length > 140 ? `${content.slice(0, 140).trim()}...` : content;
   }
 
   private toPlainText(value: string): string {

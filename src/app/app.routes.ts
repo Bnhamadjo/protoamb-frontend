@@ -6,75 +6,7 @@ import { LoginComponent } from './auth/login/login.component';
 import { PublicLayoutComponent } from './public/layout/public-layout.component';
 
 export const routes: Routes = [
-  // -------------------------------------------------------------------------
-  // PUBLIC PORTAL ROUTES
-  // -------------------------------------------------------------------------
-  {
-    path: '',
-    component: PublicLayoutComponent,
-    children: [
-      { 
-        path: '', 
-        loadComponent: () => import('./public/home/public-home.component').then(m => m.PublicHomeComponent) 
-      },
-      { 
-        path: 'pages/:slug', 
-        loadComponent: () => import('./public/pages/public-page.component').then(m => m.PublicPageComponent) 
-      },
-      { 
-        path: 'biodiversity', 
-        loadComponent: () => import('./public/biodiversity/biodiversity.component').then(m => m.PublicBiodiversityComponent) 
-      },
-      {
-        path: 'areas',
-        loadComponent: () => import('./public/areas/areas.component').then(m => m.PublicAreasComponent)
-      },
-      {
-        path: 'solutions',
-        loadComponent: () => import('./public/solutions/solutions.component').then(m => m.PublicSolutionsComponent)
-      },
-      {
-        path: 'solutions/:kind/:slug',
-        loadComponent: () => import('./public/solutions/solution-detail.component').then(m => m.SolutionDetailComponent)
-      },
-      { 
-        path: 'posts', 
-        loadComponent: () => import('./public/posts/posts.component').then(m => m.PublicPostsComponent) 
-      },
-      { 
-        path: 'posts/:slug', 
-        loadComponent: () => import('./public/posts/post-detail.component').then(m => m.PublicPostDetailComponent) 
-      },
-      { 
-        path: 'denuncias', 
-        loadComponent: () => import('./public/complaints/complaint-form.component').then(m => m.PublicComplaintFormComponent) 
-      },
-      { 
-        path: 'ocorrencias', 
-        loadComponent: () => import('./public/inspection/public-inspection-hub.component').then(m => m.PublicInspectionHubComponent) 
-      },
-      { 
-        path: 'ocorrencias/relatar', 
-        loadComponent: () => import('./public/inspection/public-ocorrencia-form.component').then(m => m.PublicOcorrenciaFormComponent) 
-      },
-      {
-        path: 'biblioteca-legal',
-        loadComponent: () => import('./public/legal/legal-library.component').then(m => m.LegalLibraryComponent)
-      },
-      {
-        path: 'extensao-agricola',
-        loadComponent: () => import('./public/agriculture/agriculture-hub.component').then(m => m.AgricultureHubComponent)
-      },
-      {
-        path: 'recursos-hidricos',
-        loadComponent: () => import('./public/water/water-hub.component').then(m => m.WaterHubComponent)
-      },
-      {
-        path: '404',
-        loadComponent: () => import('./public/pages/page-not-found.component').then(m => m.PageNotFoundComponent)
-      }
-    ]
-  },
+
 
   // -------------------------------------------------------------------------
   // AUTH ROUTES
@@ -94,7 +26,8 @@ export const routes: Routes = [
       // Páginas
       {
         path: 'pages',
-        loadComponent: () => import('./admin/pages/pages-list/page-list.component').then(m => m.PagesListComponent)
+        loadComponent: () => import('./admin/pages/pages-list/page-list.component').then(m => m.PagesListComponent),
+        data: { roles: ['admin', 'tecnico'] }
       },
       {
         path: 'pages/new',
@@ -108,7 +41,8 @@ export const routes: Routes = [
       // Publicações (Posts)
       { 
         path: 'posts', 
-        loadComponent: () => import('./admin/posts/posts-list/posts-list.component').then(m => m.PostsListComponent)
+        loadComponent: () => import('./admin/posts/posts-list/posts-list.component').then(m => m.PostsListComponent),
+        data: { roles: ['admin', 'tecnico'] }
       },
       { 
         path: 'posts/new', 
@@ -158,10 +92,92 @@ export const routes: Routes = [
         ]
       },
 
+      // Gestão de Utilizadores
+      {
+        path: 'users',
+        data: { roles: ['admin'] },
+        children: [
+          { 
+            path: '', 
+            loadComponent: () => import('./admin/users/users-list/users-list.component').then(m => m.UsersListComponent) 
+          },
+          { 
+            path: 'new', 
+            loadComponent: () => import('./admin/users/user-form/user-form.component').then(m => m.UserFormComponent) 
+          },
+          { 
+            path: 'edit/:id', 
+            loadComponent: () => import('./admin/users/user-form/user-form.component').then(m => m.UserFormComponent) 
+          },
+        ]
+      },
+
+      // Integrações & API
+      {
+        path: 'integrations',
+        loadComponent: () => import('./admin/integrations/integrations.component').then(m => m.IntegrationsComponent),
+        data: { roles: ['admin'] }
+      },
+
       // Configurações
       {
         path: 'settings',
-        loadComponent: () => import('./admin/settings/settings-form.component').then(m => m.SettingsFormComponent)
+        loadComponent: () => import('./admin/settings/settings-form.component').then(m => m.SettingsFormComponent),
+        data: { roles: ['admin'] }
+      },
+
+      // Media
+      {
+        path: 'media',
+        loadComponent: () => import('./admin/media/media-list.component').then(m => m.MediaListComponent)
+      },
+
+      // Parceiros
+      {
+        path: 'partners',
+        loadComponent: () => import('./admin/partners/partner-list/partner-list.component').then(m => m.PartnerListComponent)
+      },
+
+      // Inventário Químico
+      {
+        path: 'chemicals',
+        data: { roles: ['admin', 'tecnico'] },
+        children: [
+          { 
+            path: '', 
+            loadComponent: () => import('./admin/chemicals/chemicals-list/chemicals-list.component').then(m => m.ChemicalsListComponent) 
+          },
+          { 
+            path: 'new', 
+            loadComponent: () => import('./admin/chemicals/chemical-form/chemical-form.component').then(m => m.ChemicalFormComponent) 
+          },
+          { 
+            path: 'edit/:id', 
+            loadComponent: () => import('./admin/chemicals/chemical-form/chemical-form.component').then(m => m.ChemicalFormComponent) 
+          },
+        ]
+      },
+      {
+        path: 'partners/new',
+        loadComponent: () => import('./admin/partners/partner-form/partner-form.component').then(m => m.PartnerFormComponent)
+      },
+      {
+        path: 'partners/edit/:id',
+        loadComponent: () => import('./admin/partners/partner-form/partner-form.component').then(m => m.PartnerFormComponent)
+      },
+
+      // Convenções
+      {
+        path: 'conventions',
+        loadComponent: () => import('./admin/conventions/convention-list/convention-list.component').then(m => m.ConventionListComponent)
+      },
+      {
+        path: 'conventions/new',
+        loadComponent: () => import('./admin/conventions/convention-form/convention-form.component').then(m => m.ConventionFormComponent)
+      },
+      {
+        path: 'conventions/edit/:id',
+        loadComponent: () => import('./admin/conventions/convention-form/convention-form.component').then(m => m.ConventionFormComponent)
       },
 
       // Denúncias
@@ -174,9 +190,53 @@ export const routes: Routes = [
         loadComponent: () => import('./admin/complaints/complaints-detail/complaints-detail.component').then(m => m.ComplaintsDetailComponent)
       },
 
+      // Gestão de Resíduos
+      {
+        path: 'waste',
+        loadComponent: () => import('./admin/waste/waste-list/waste-list.component').then(m => m.WasteListComponent)
+      },
+      {
+        path: 'waste/new',
+        loadComponent: () => import('./admin/waste/waste-form/waste-form.component').then(m => m.WasteFormComponent)
+      },
+      {
+        path: 'waste/edit/:id',
+        loadComponent: () => import('./admin/waste/waste-form/waste-form.component').then(m => m.WasteFormComponent)
+      },
+      {
+        path: 'waste/manifest/:id',
+        loadComponent: () => import('./admin/waste/waste-manifest/waste-manifest.component').then(m => m.WasteManifestComponent)
+      },
+      {
+        path: 'waste/reports',
+        loadComponent: () => import('./admin/waste/waste-reports/waste-reports.component').then(m => m.WasteReportsComponent)
+      },
+      {
+        path: 'waste/transporters',
+        loadComponent: () => import('./admin/waste/waste-transporters/waste-transporters.component').then(m => m.WasteTransportersComponent)
+      },
+
+      // Monitorização de Qualidade Ambiental
+      {
+        path: 'quality',
+        loadComponent: () => import('./admin/quality/quality-list/quality-list.component').then(m => m.AdminQualityListComponent),
+        data: { roles: ['admin', 'tecnico', 'auditor'] }
+      },
+      {
+        path: 'quality/new',
+        loadComponent: () => import('./admin/quality/quality-form/quality-form.component').then(m => m.AdminQualityFormComponent),
+        data: { roles: ['admin', 'tecnico'] }
+      },
+      {
+        path: 'quality/edit/:id',
+        loadComponent: () => import('./admin/quality/quality-form/quality-form.component').then(m => m.AdminQualityFormComponent),
+        data: { roles: ['admin', 'tecnico'] }
+      },
+
       // Inspeção e Controlo
       {
         path: 'inspection',
+        data: { roles: ['admin', 'tecnico'] },
         children: [
           // Ocorrências
           { 
@@ -229,6 +289,100 @@ export const routes: Routes = [
       },
 
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
+    ]
+  },
+
+  // -------------------------------------------------------------------------
+  // PUBLIC PORTAL ROUTES
+  // -------------------------------------------------------------------------
+  {
+    path: '',
+    component: PublicLayoutComponent,
+    children: [
+      { 
+        path: '', 
+        pathMatch: 'full',
+        loadComponent: () => import('./public/home/public-home.component').then(m => m.PublicHomeComponent) 
+      },
+      { path: 'pages/partners', redirectTo: 'partners', pathMatch: 'full' },
+      { path: 'pages/conventions', redirectTo: 'conventions', pathMatch: 'full' },
+      { 
+        path: 'partners', 
+        loadComponent: () => import('./public/partners/partners.component').then(m => m.PublicPartnersComponent) 
+      },
+      { 
+        path: 'conventions', 
+        loadComponent: () => import('./public/conventions/conventions.component').then(m => m.PublicConventionsComponent) 
+      },
+      {
+        path: 'waste',
+        loadComponent: () => import('./public/waste/public-waste.component').then(m => m.PublicWasteComponent)
+      },
+      { 
+        path: 'pages/:slug', 
+        loadComponent: () => import('./public/pages/public-page.component').then(m => m.PublicPageComponent) 
+      },
+      { 
+        path: 'biodiversity', 
+        loadComponent: () => import('./public/biodiversity/biodiversity.component').then(m => m.PublicBiodiversityComponent) 
+      },
+
+      {
+        path: 'areas',
+        loadComponent: () => import('./public/areas/areas.component').then(m => m.PublicAreasComponent)
+      },
+      {
+        path: 'solutions',
+        loadComponent: () => import('./public/solutions/solutions.component').then(m => m.PublicSolutionsComponent)
+      },
+      {
+        path: 'interdepartamental',
+        loadComponent: () => import('./public/solutions/interdepartmental.component').then(m => m.InterdepartmentalComponent)
+      },
+      {
+        path: 'solutions/:kind/:slug',
+        loadComponent: () => import('./public/solutions/solution-detail.component').then(m => m.SolutionDetailComponent)
+      },
+      { 
+        path: 'posts', 
+        loadComponent: () => import('./public/posts/posts.component').then(m => m.PublicPostsComponent) 
+      },
+      { 
+        path: 'posts/:slug', 
+        loadComponent: () => import('./public/posts/post-detail.component').then(m => m.PublicPostDetailComponent) 
+      },
+      { 
+        path: 'denuncias', 
+        loadComponent: () => import('./public/complaints/complaint-form.component').then(m => m.PublicComplaintFormComponent) 
+      },
+      { 
+        path: 'ocorrencias', 
+        loadComponent: () => import('./public/inspection/public-inspection-hub.component').then(m => m.PublicInspectionHubComponent) 
+      },
+      { 
+        path: 'ocorrencias/relatar', 
+        loadComponent: () => import('./public/inspection/public-ocorrencia-form.component').then(m => m.PublicOcorrenciaFormComponent) 
+      },
+      {
+        path: 'biblioteca-legal',
+        loadComponent: () => import('./public/legal/legal-library.component').then(m => m.LegalLibraryComponent)
+      },
+      {
+        path: 'extensao-agricola',
+        loadComponent: () => import('./public/agriculture/agriculture-hub.component').then(m => m.AgricultureHubComponent)
+      },
+      {
+        path: 'recursos-hidricos',
+        loadComponent: () => import('./public/water/water-hub.component').then(m => m.WaterHubComponent)
+      },
+      {
+        path: 'qualidade-ambiental',
+        loadComponent: () => import('./public/quality/public-quality.component').then(m => m.PublicQualityComponent)
+      },
+      {
+        path: '404',
+        loadComponent: () => import('./public/pages/page-not-found.component').then(m => m.PageNotFoundComponent)
+      }
     ]
   },
 

@@ -68,7 +68,7 @@ import { SeoService } from '../../services/seo.service';
   styles: [`
     .detail-hero { padding: 84px 0 72px; background: linear-gradient(135deg, #143326 0%, #1f6147 55%, #dbe7d0 100%); color: #fff; }
     .detail-hero h1 { color: #fff; font-size: clamp(2.3rem, 4vw, 4rem); margin-bottom: 16px; }
-    .detail-hero p { max-width: 820px; font-size: 1.05rem; line-height: 1.85; }
+    .detail-hero p { max-width: 820px; font-size: 1.05rem; line-height: 1.85; color: rgba(255, 255, 255, 0.9); }
     .detail-layout { margin: 60px auto 90px; }
     .detail-card { padding: 34px; border-radius: 28px; }
     .meta-row { display: flex; gap: 12px; align-items: center; margin-bottom: 18px; flex-wrap: wrap; }
@@ -167,7 +167,7 @@ export class SolutionDetailComponent implements OnInit {
       { name: 'Fiscalizacao ambiental', summary: 'Registo de ocorrencias, alertas e acompanhamento de casos em campo.', link: '/denuncias', audience: 'Inspecao e controlo', status: 'active' },
       { name: 'Extensao agricola', summary: 'Campanhas, orientacoes tecnicas e disseminacao de boas praticas para produtores.', link: '/posts', audience: 'Agricultura e desenvolvimento rural', status: 'pilot' },
       { name: 'Biblioteca tecnico-legal', summary: 'Centralize legislacao, relatorios, manuais e anexos PDF num ambiente unico.', link: '/posts', audience: 'Tecnicos e juristas', status: 'active' },
-      { name: 'Coordenacao interdepartamental', summary: 'Estrutura o portal para novos departamentos e linhas programaticas do Estado.', link: '/solutions', audience: 'Gestao institucional', status: 'planned' }
+      { name: 'Coordenacao interdepartamental', summary: 'Hub de integracao ministerial, partilha de recursos tecnicos e coordenacao de projetos.', link: '/interdepartamental', audience: 'Gestao institucional', status: 'active' }
     ];
   }
 

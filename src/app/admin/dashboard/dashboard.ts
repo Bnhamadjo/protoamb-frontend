@@ -8,203 +8,203 @@ import { PostService } from '../posts/services/post.service';
 import { BiodiversityService } from '../biodiversity/services/biodiversity.service';
 import { AreaService } from '../areas/services/area.service';
 import { ComplaintService, Complaint } from '../complaints/services/complaint.service';
-import { DepartmentItem, PlatformModuleItem, SettingsService, SiteSettings } from '../../services/settings.service';
+import { DepartmentItem, MapMarker, PlatformModuleItem, SettingsService, SiteSettings } from '../../services/settings.service';
+import * as L from 'leaflet';
 
 @Component({
   standalone: true,
   selector: 'admin-dashboard',
   imports: [CommonModule, RouterLink],
   template: `
-    <div class="dashboard-container">
+    <div class="dashboard-container anim-up">
       <header class="dashboard-header">
-        <div>
-          <span class="section-kicker">Centro de Operacoes</span>
-          <h1>Visao geral do portal administrativo</h1>
-          <p class="muted">Um panorama rapido para publicar, monitorizar e manter o portal coerente todos os dias.</p>
+        <div class="header-left">
+          <span class="section-kicker">Hub de Governação Digital</span>
+          <h1 class="section-title">Centro de Comando MAB</h1>
+          <p class="subtitle muted">Monitorize em tempo real a atividade do portal, biodiversidade e integridade territorial.</p>
         </div>
-        <div class="header-actions">
-          <a routerLink="/admin/posts/new" class="btn primary">Nova publicacao</a>
-          <a routerLink="/admin/settings" class="btn outline">Ajustar plataforma</a>
+        <div class="header-right actions">
+          <a routerLink="/admin/posts/new" class="btn primary lg">
+            <span>✍️</span> Nova Publicação
+          </a>
+          <a routerLink="/admin/settings" class="btn outline lg ml-3 text-brand">
+             Personalizar Portal
+          </a>
         </div>
       </header>
 
       <div *ngIf="loading" class="center-box">
         <div class="spinner"></div>
-        <p class="muted">Carregando painel...</p>
+        <p class="muted mt-4">Sincronizando dados estaduais...</p>
       </div>
 
       <div *ngIf="!loading && !hasData" class="card empty-state">
-        <h3>Painel sem dados ainda</h3>
-        <p class="muted">Assim que houver publicacoes, especies, areas ou denuncias, os indicadores aparecem aqui.</p>
+        <div class="empty-illustration">
+          <h3>Painel à espera de dados</h3>
+          <p class="muted">Assim que houver publicações, espécies, áreas ou denúncias, os indicadores aparecem aqui.</p>
+          <button class="btn primary sm mt-4" routerLink="/admin/posts/new">Começar agora</button>
+        </div>
       </div>
 
       <div class="stats-grid" *ngIf="!loading && hasData">
-        <div class="stat-card">
-          <div class="icon">Bio</div>
-          <div class="info">
-            <span class="label">Biodiversidade</span>
-            <h2 class="value">{{ bioCount }}</h2>
-            <span class="trend success">Especies registadas</span>
+        <div class="stat-card cursor-pointer" routerLink="/admin/biodiversity">
+          <div class="stat-icon bio">🌿</div>
+          <div class="stat-info">
+            <span class="stat-label">Biodiversidade</span>
+            <h2 class="stat-value">{{ bioCount }}</h2>
+            <span class="stat-trend trend-up">Espécies Registadas</span>
           </div>
         </div>
-        <div class="stat-card">
-          <div class="icon">Areas</div>
-          <div class="info">
-            <span class="label">Areas Protegidas</span>
-            <h2 class="value">{{ areaCount }}</h2>
-            <span class="trend">Parques e reservas</span>
+        <div class="stat-card cursor-pointer" routerLink="/admin/areas">
+          <div class="stat-icon area">🗾</div>
+          <div class="stat-info">
+            <span class="stat-label">Áreas Protegidas</span>
+            <h2 class="stat-value">{{ areaCount }}</h2>
+            <span class="stat-trend transition">Parques & Reservas</span>
           </div>
         </div>
-        <div class="stat-card">
-          <div class="icon">Den</div>
-          <div class="info">
-            <span class="label">Denuncias</span>
-            <h2 class="value">{{ complaintCount }}</h2>
-            <span class="trend danger">{{ pendingComplaints }} pendentes</span>
+        <div class="stat-card cursor-pointer" routerLink="/admin/complaints">
+          <div class="stat-icon alert">🚨</div>
+          <div class="stat-info">
+            <span class="stat-label">Denúncias</span>
+            <h2 class="stat-value">{{ complaintCount }}</h2>
+            <span class="stat-trend" [class.trend-down]="pendingComplaints > 0">
+              {{ pendingComplaints }} Pendentes de Auditoria
+            </span>
           </div>
         </div>
-        <div class="stat-card">
-          <div class="icon">Posts</div>
-          <div class="info">
-            <span class="label">Publicacoes</span>
-            <h2 class="value">{{ postCount }}</h2>
-            <span class="trend">Artigos e noticias</span>
+        <div class="stat-card cursor-pointer" routerLink="/admin/posts">
+          <div class="stat-icon post">📰</div>
+          <div class="stat-info">
+            <span class="stat-label">Engajamento Digital</span>
+            <h2 class="stat-value">{{ postCount }}</h2>
+            <span class="stat-trend">Publicações Ativas</span>
           </div>
         </div>
       </div>
 
-      <div class="dashboard-grid" *ngIf="!loading && hasData">
-        <div class="card quick-actions">
-          <div class="card-header">
-            <h3>Acoes rapidas</h3>
-          </div>
+      <!-- MAP SECTION -->
+      <section class="card mb-8 anim-up" *ngIf="!loading && hasData" style="padding: 0; overflow: hidden; height: 400px; position: relative;">
+        <div id="admin-map" style="width: 100%; height: 100%; z-index: 1;"></div>
+        <div class="map-overlay-admin">
+          <h4>Vigilância Territorial SIG-MAB</h4>
+          <p class="muted text-xs">Visualização consolidada de infraestruturas e sensores rurais.</p>
+        </div>
+      </section>
+
+      <div class="dashboard-layout" *ngIf="!loading && hasData">
+        <section class="card quick-actions-panel">
+          <h2 class="card-title mb-8">Ferramentas de Gestão Rápida</h2>
           <div class="action-grid">
             <a routerLink="/admin/posts/new" class="action-tile">
-              <strong>Publicar noticia</strong>
-              <span>Criar novo artigo com imagem ou PDF.</span>
+              <div class="tile-icon">📝</div>
+              <div class="tile-content">
+                <strong>Publicar Notícia</strong>
+                <p>Anuncie decisões ministeriais e eventos.</p>
+              </div>
             </a>
             <a routerLink="/admin/pages/new" class="action-tile">
-              <strong>Nova pagina</strong>
-              <span>Adicionar conteudo institucional ou informativo.</span>
+              <div class="tile-icon">🌎</div>
+              <div class="tile-content">
+                <strong>Página Institucional</strong>
+                <p>Crie novos espaços informativos de Governo.</p>
+              </div>
             </a>
             <a routerLink="/admin/media" class="action-tile">
-              <strong>Biblioteca media</strong>
-              <span>Organizar imagens e documentos do portal.</span>
+              <div class="tile-icon">🖼️</div>
+              <div class="tile-content">
+                <strong>Biblioteca Técnica</strong>
+                <p>Gestão central de ficheiros e imagens.</p>
+              </div>
             </a>
             <a routerLink="/admin/complaints" class="action-tile">
-              <strong>Rever denuncias</strong>
-              <span>Acompanhar casos pendentes e novos registos.</span>
+               <div class="tile-icon">🕵️</div>
+               <div class="tile-content">
+                 <strong>Rever Alertas</strong>
+                 <p>Controlo operacional de denúncias públicas.</p>
+               </div>
             </a>
           </div>
-        </div>
+        </section>
 
-        <div class="card saas-vision">
-          <div class="card-header">
-            <h3>Visao MAB do Estado</h3>
-            <a routerLink="/solutions" class="btn ghost sm">Ver publico</a>
+        <section class="card secondary-panel">
+          <div class="card-header-flex">
+            <h2 class="card-title">Módulos da Plataforma</h2>
+            <a routerLink="/admin/settings" class="btn sm ghost">Gerir Todos</a>
           </div>
-          <p class="muted" style="margin-bottom: 18px;">{{ platformSummary }}</p>
-          <div class="list-stack" *ngIf="solutionModules.length; else noModules">
-            <div class="list-row" *ngFor="let module of solutionModules.slice(0, 4)">
-              <div>
+          <div class="list-container mt-6">
+            <div class="list-item cursor-pointer" *ngFor="let module of solutionModules.slice(0, 4)" routerLink="/admin/settings">
+              <div class="item-main">
                 <strong>{{ module.name }}</strong>
-                <span class="muted">{{ module.audience || 'Operacao tecnica' }}</span>
+                <span class="muted text-xs uppercase letter-spacing-1">{{ module.audience }}</span>
               </div>
-              <span class="badge">{{ getModuleStatusLabel(module.status) }}</span>
+              <span class="badge" [ngClass]="module.status">{{ getModuleStatusLabel(module.status) }}</span>
             </div>
           </div>
-          <ng-template #noModules>
-            <p class="muted">Configure os modulos da plataforma nas configuracoes gerais.</p>
-          </ng-template>
-        </div>
+        </section>
 
-        <div class="card recent-complaints">
-          <div class="card-header">
-            <h3>Denuncias recentes</h3>
-            <a routerLink="/admin/complaints" class="btn ghost sm">Ver todas</a>
+        <section class="card secondary-panel">
+          <div class="card-header-flex">
+            <h2 class="card-title">Alertas Recentes</h2>
+            <a routerLink="/admin/complaints" class="btn sm ghost">Ver Todos</a>
           </div>
-          <div class="table-container" *ngIf="recentComplaints.length > 0; else noComplaints">
+          <div class="table-container mt-6" *ngIf="recentComplaints.length > 0; else noComplaints">
             <table class="table">
               <thead>
                 <tr>
-                  <th>Assunto</th>
-                  <th>Status</th>
+                  <th>Incidente</th>
+                  <th>Estado</th>
                   <th>Data</th>
                 </tr>
               </thead>
               <tbody>
-                <tr *ngFor="let complaint of recentComplaints">
-                  <td>{{ complaint.subject }}</td>
-                  <td>
-                    <span class="badge" [class]="complaint.status">{{ complaint.status }}</span>
-                  </td>
-                  <td>{{ complaint.created_at | date:'dd/MM' }}</td>
+                <tr *ngFor="let c of recentComplaints" class="cursor-pointer" [routerLink]="['/admin/complaints', c.id]">
+                  <td class="font-bold">{{ c.subject }}</td>
+                  <td><span class="badge sm" [class]="c.status">{{ c.status }}</span></td>
+                  <td class="muted text-xs">{{ c.created_at | date:'dd/MM' }}</td>
                 </tr>
               </tbody>
             </table>
           </div>
           <ng-template #noComplaints>
-            <p class="muted">Sem denuncias recentes.</p>
+            <div class="empty-mini">Nenhum alerta recente.</div>
           </ng-template>
-        </div>
+        </section>
 
-        <div class="card activity-visual">
-          <h3>Saude editorial do portal</h3>
-          <div class="simulated-chart">
-            <div class="bar" style="height: 80%"><span>Set</span></div>
-            <div class="bar" style="height: 65%"><span>Out</span></div>
-            <div class="bar" style="height: 90%"><span>Nov</span></div>
-            <div class="bar" style="height: 75%"><span>Dez</span></div>
-            <div class="bar" style="height: 85%"><span>Jan</span></div>
-          </div>
-          <p class="muted center">Pulso visual do conteudo e da atividade operacional.</p>
-        </div>
-
-        <div class="card recent-posts">
-          <div class="card-header">
-            <h3>Publicacoes recentes</h3>
-            <a routerLink="/admin/posts" class="btn ghost sm">Ver lista</a>
-          </div>
-          <div class="list-stack" *ngIf="recentPosts.length; else noPosts">
-            <div class="list-row" *ngFor="let post of recentPosts">
-              <div>
-                <strong>{{ post.title }}</strong>
-                <span class="muted">{{ post.created_at | date:'dd/MM/yyyy' }}</span>
+        <section class="card secondary-panel chart-panel">
+           <h2 class="card-title">Atividade de Conteúdo</h2>
+           <div class="bar-chart-visual mt-10">
+              <div class="bar-group" *ngFor="let h of [80, 65, 90, 75, 85]; let i = index">
+                 <div class="bar" [style.height.%]="h"></div>
+                 <span class="bar-label">{{ ['Set', 'Out', 'Nov', 'Dez', 'Jan'][i] }}</span>
               </div>
-              <span class="badge">{{ post.status || 'published' }}</span>
+           </div>
+           <p class="muted center text-sm mt-10">Métrica de publicações e engajamento mensal.</p>
+        </section>
+
+        <section class="card secondary-panel">
+          <div class="card-header-flex">
+            <h2 class="card-title">Últimas Publicações</h2>
+            <a routerLink="/admin/posts" class="btn sm ghost">Explorar Lista</a>
+          </div>
+          <div class="list-container mt-6">
+            <div class="list-item cursor-pointer" *ngFor="let post of recentPosts" [routerLink]="['/admin/posts', post.id, 'edit']">
+              <div class="item-main">
+                <strong class="text-sm">{{ post.title }}</strong>
+                <span class="muted text-xs">{{ post.created_at | date:'dd MMM yyyy' }}</span>
+              </div>
+               <span class="badge sm">{{ post.status || 'published' }}</span>
             </div>
           </div>
-          <ng-template #noPosts>
-            <p class="muted">Sem publicacoes recentes.</p>
-          </ng-template>
-        </div>
-
-        <div class="card departments-card">
-          <div class="card-header">
-            <h3>Departamentos preparados</h3>
-            <a routerLink="/admin/settings" class="btn ghost sm">Gerir</a>
-          </div>
-          <div class="list-stack" *ngIf="stateDepartments.length; else noDepartments">
-            <div class="list-row" *ngFor="let department of stateDepartments.slice(0, 5)">
-              <div>
-                <strong>{{ department.name }}</strong>
-                <span class="muted">{{ department.focus }}</span>
-              </div>
-            </div>
-          </div>
-          <ng-template #noDepartments>
-            <p class="muted">Adicione departamentos e direcoes para crescer alem do portal atual.</p>
-          </ng-template>
-        </div>
+        </section>
       </div>
     </div>
   `,
   styles: [`
-    .dashboard-container { animation: fadeIn 0.5s ease-out; }
-    .dashboard-header { margin-bottom: 32px; display: flex; justify-content: space-between; gap: 24px; align-items: flex-end; }
-    .header-actions { display: flex; gap: 12px; flex-wrap: wrap; }
-    .dashboard-header h1 { font-size: 2rem; margin-bottom: 4px; }
-    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; margin-bottom: 32px; }
+    .dashboard-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 48px; border-bottom: 1px solid var(--border); padding-bottom: 40px; }
+    .section-title { margin-bottom: 10px; }
+    
+    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px; margin-bottom: 48px; }
     .stat-card {
       background: #fff; padding: 24px; border-radius: var(--radius-md);
       display: flex; align-items: center; gap: 20px; box-shadow: var(--shadow-sm);
@@ -239,9 +239,24 @@ import { DepartmentItem, PlatformModuleItem, SettingsService, SiteSettings } fro
       .stats-grid, .action-grid, .dashboard-grid { grid-template-columns: 1fr 1fr; }
     }
     @media (max-width: 800px) {
-      .dashboard-header, .stats-grid, .action-grid, .dashboard-grid { grid-template-columns: 1fr; display: grid; }
-      .dashboard-header { align-items: start; }
+      .dashboard-header { flex-direction: column; align-items: flex-start; gap: 20px; margin-bottom: 30px; padding-bottom: 24px; }
+      .stats-grid, .action-grid, .dashboard-grid { grid-template-columns: 1fr; }
+      .stat-card { padding: 16px; gap: 12px; }
+      .stat-card .info h2 { font-size: 1.5rem; }
     }
+    .cursor-pointer { cursor: pointer; }
+    .stat-card:hover, .action-tile:hover, .list-item:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+      border-color: var(--brand);
+    }
+    .map-overlay-admin {
+      position: absolute; top: 20px; left: 20px; z-index: 10;
+      background: rgba(255,255,255,0.95); padding: 15px 20px; border-radius: 12px;
+      box-shadow: var(--shadow); border: 1px solid var(--border);
+      max-width: 280px;
+    }
+    .map-overlay-admin h4 { margin: 0; font-size: 0.9rem; color: var(--brand); }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
   `]
 })
@@ -256,6 +271,8 @@ export class DashboardComponent implements OnInit {
   platformSummary = 'Estruture uma unica plataforma para ambiente, agricultura e coordenacao entre departamentos.';
   solutionModules: PlatformModuleItem[] = [];
   stateDepartments: DepartmentItem[] = [];
+  mapMarkers: MapMarker[] = [];
+  adminMap?: L.Map;
   loading = true;
 
   constructor(
@@ -295,11 +312,44 @@ export class DashboardComponent implements OnInit {
         this.platformSummary = res.settings?.platform_summary || this.platformSummary;
         this.solutionModules = Array.isArray(res.settings?.solution_modules) ? res.settings.solution_modules : [];
         this.stateDepartments = Array.isArray(res.settings?.state_departments) ? res.settings.state_departments : [];
+        this.mapMarkers = res.settings?.map_markers || [];
+        
+        if (this.hasData) {
+          setTimeout(() => this.initAdminMap(), 500);
+        }
       },
       error: () => {
         this.recentComplaints = [];
       }
     });
+  }
+
+  initAdminMap() {
+    if (this.adminMap) {
+      this.adminMap.remove();
+    }
+
+    this.adminMap = L.map('admin-map', { zoomControl: false }).setView([11.86, -15.59], 8);
+    L.control.zoom({ position: 'bottomright' }).addTo(this.adminMap);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors'
+    }).addTo(this.adminMap);
+
+    const icons = {
+      furo: L.divIcon({ html: '💧', className: 'map-icon' }),
+      basin: L.divIcon({ html: '🌊', className: 'map-icon' }),
+      station: L.divIcon({ html: '📡', className: 'map-icon' }),
+      project: L.divIcon({ html: '🏗️', className: 'map-icon' }),
+    };
+
+    if (this.mapMarkers.length > 0) {
+      this.mapMarkers.forEach(m => {
+        const icon = (icons as any)[m.type] || icons.furo;
+        L.marker([m.lat, m.lng], { icon }).addTo(this.adminMap!)
+          .bindPopup(`<b>${m.title}</b><br>${m.description || ''}`);
+      });
+    }
   }
 
   getModuleStatusLabel(status?: string): string {

@@ -14,10 +14,10 @@ import { API_BASE } from '../../api-config';
     <!-- Hero Header using the slider pattern -->
     <div class="home-slider" style="height: 48vh; min-height: 400px;">
       <div class="slides-container">
-        <div class="slide active" style="background-image: linear-gradient(rgba(18,51,38,0.7), rgba(8,25,18,0.9)), url('https://images.unsplash.com/photo-1592982537447-6f2c6c10b0a8?q=80&w=2070&auto=format&fit=crop'); background-position: center;">
+        <div class="slide active" style="background-image: linear-gradient(135deg, rgba(8, 25, 18, 0.9) 0%, rgba(18, 51, 38, 0.75) 50%, rgba(0, 0, 0, 0.85) 100%), url('https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=2069&auto=format&fit=crop'); background-position: center;">
           <div class="slide-content anim-up">
             <h1 class="logo-text" style="font-size: 3.5rem;">Extensão Agrícola e Rural</h1>
-            <p class="subtitle" style="max-width: 800px; margin: 0 auto 30px auto;">Apoio técnico direto, disseminação de boas práticas rurais e monitorização partilhada das épocas de sementeira e colheita do país.</p>
+            <p class="subtitle" style="max-width: 800px; margin: 0 auto 30px auto; color: #fff; opacity: 0.9;">Apoio técnico direto, disseminação de boas práticas rurais e monitorização partilhada das épocas de sementeira e colheita do país.</p>
             
             <div class="premium-glass-card" style="display: inline-flex; align-items: center; gap: 20px; padding: 15px 35px; border-radius: 50px; background: rgba(255,255,255,0.1); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.2); box-shadow: 0 8px 32px rgba(0,0,0,0.3);">
                <span style="font-size: 2rem;">🌧️</span>

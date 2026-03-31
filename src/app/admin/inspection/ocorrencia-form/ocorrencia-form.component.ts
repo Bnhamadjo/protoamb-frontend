@@ -10,28 +10,33 @@ import { FormsModule } from '@angular/forms';
   standalone: true,
   imports: [CommonModule, RouterModule, FormsModule],
   template: `
-    <div class="p-6">
-      <div class="mb-6">
-        <a routerLink="/admin/inspection/ocorrencias" class="text-blue-600 text-sm hover:underline">← Voltar</a>
-        <h1 class="text-2xl font-bold mt-2">{{ isEdit ? 'Editar' : 'Nova' }} Ocorrência</h1>
-      </div>
+    <div class="content-view anim-up">
+      <header class="section-header">
+        <div class="header-left">
+          <a routerLink="/admin/inspection/ocorrencias" class="back-link">← Cancelar e Voltar</a>
+          <h1 class="section-title mt-2">{{ isEdit ? 'Editar' : 'Registar Nova' }} Ocorrência</h1>
+          <p class="subtitle muted">Preencha os detalhes técnicos do incidente para registo e monitorização governamental.</p>
+        </div>
+      </header>
 
-      <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-8 max-w-3xl">
-        <form (ngSubmit)="save()" #form="ngForm" class="space-y-6">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="md:col-span-2">
-              <label class="block text-sm font-bold text-gray-700 mb-2">Título da Ocorrência</label>
-              <input type="text" name="titulo" [(ngModel)]="model.titulo" required class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+      <div class="card shadow-lg mt-8 max-w-4xl">
+        <form (ngSubmit)="save()" #form="ngForm" class="form-layout">
+          <div class="form-grid">
+            <div class="form-group full-width">
+              <label>Título Descritivo do Incidente</label>
+              <input type="text" name="titulo" [(ngModel)]="model.titulo" required 
+                     placeholder="Ex: Detetada queima de resíduos ilegais em Buba">
             </div>
 
-            <div class="md:col-span-2">
-              <label class="block text-sm font-bold text-gray-700 mb-2">Descrição Detalhada</label>
-              <textarea name="descricao" [(ngModel)]="model.descricao" rows="5" required class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"></textarea>
+            <div class="form-group full-width">
+              <label>Relatório Narrativo / Descrição Detalhada</label>
+              <textarea name="descricao" [(ngModel)]="model.descricao" rows="6" required 
+                        placeholder="Descreva as circunstâncias, localização exata e impacto observado..."></textarea>
             </div>
 
-            <div>
-              <label class="block text-sm font-bold text-gray-700 mb-2">Tipo de Incidente</label>
-              <select name="tipo" [(ngModel)]="model.tipo" required class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+            <div class="form-group">
+              <label>Categoria de Incidente</label>
+              <select name="tipo" [(ngModel)]="model.tipo" required>
                 <option value="Incêndio">Incêndio</option>
                 <option value="Desmatamento">Desmatamento</option>
                 <option value="Caça Ilegal">Caça Ilegal</option>
@@ -40,9 +45,9 @@ import { FormsModule } from '@angular/forms';
               </select>
             </div>
 
-            <div>
-              <label class="block text-sm font-bold text-gray-700 mb-2">Gravidade</label>
-              <select name="gravidade" [(ngModel)]="model.gravidade" required class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+            <div class="form-group">
+              <label>Nível de Gravidade</label>
+              <select name="gravidade" [(ngModel)]="model.gravidade" required>
                 <option value="baixa">Baixa</option>
                 <option value="media">Média</option>
                 <option value="alta">Alta</option>
@@ -50,32 +55,48 @@ import { FormsModule } from '@angular/forms';
               </select>
             </div>
 
-            <div>
-              <label class="block text-sm font-bold text-gray-700 mb-2">Atribuir Equipa</label>
-              <select name="equipa_id" [(ngModel)]="model.equipa_id" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
-                <option [ngValue]="null">Não atribuir agora</option>
+            <div class="form-group">
+              <label>Atribuição de Equipa (Opcional)</label>
+              <select name="equipa_id" [(ngModel)]="model.equipa_id">
+                <option [ngValue]="null">A aguardar atribuição técnica</option>
                 <option *ngFor="let t of teams" [value]="t.id">{{ t.nome }}</option>
               </select>
             </div>
 
-            <div>
-              <label class="block text-sm font-bold text-gray-700 mb-2">Localização (Texto)</label>
-              <input type="text" name="localizacao" [(ngModel)]="model.localizacao" placeholder="Ex: Setor de Buba" class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+            <div class="form-group">
+              <label>Localização (Referencial)</label>
+              <input type="text" name="localizacao" [(ngModel)]="model.localizacao" 
+                     placeholder="Ex: Província Sul, Setor de Buba">
             </div>
           </div>
 
-          <div class="flex justify-end gap-3 pt-6 border-t">
-            <button type="button" routerLink="/admin/inspection/ocorrencias" class="px-6 py-2 border rounded-lg hover:bg-gray-50 transition font-bold">
-              Cancelar
+          <div class="form-actions mt-10">
+            <button type="button" routerLink="/admin/inspection/ocorrencias" class="btn outline lg">
+              Descartar
             </button>
-            <button type="submit" [disabled]="!form.valid" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-bold disabled:opacity-50">
-              {{ isEdit ? 'Guardar Alterações' : 'Criar Ocorrência' }}
+            <button type="submit" [disabled]="!form.valid" class="btn primary lg ml-4">
+              {{ isEdit ? 'Atualizar Registo' : 'Confirmar e Publicar' }}
             </button>
           </div>
         </form>
       </div>
     </div>
-  `
+  `,
+  styles: [`
+    .section-header { margin-bottom: 40px; border-bottom: 1px solid var(--border); padding-bottom: 30px; }
+    .back-link { font-weight: 800; color: var(--ink-light); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; }
+    .back-link:hover { color: var(--brand); }
+    .subtitle { font-size: 1rem; margin-top: 10px; }
+
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+    .full-width { grid-column: span 2; }
+
+    .form-group label { display: block; font-weight: 800; font-size: 0.85rem; color: var(--brand); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+    
+    .form-actions { display: flex; justify-content: flex-end; padding-top: 30px; border-top: 1px solid var(--border); }
+    
+    @media (max-width: 768px) { .form-grid { grid-template-columns: 1fr; } .full-width { grid-column: auto; } }
+  `]
 })
 export class OcorrenciaFormComponent implements OnInit {
   isEdit = false;

@@ -13,10 +13,10 @@ import { FormsModule } from '@angular/forms';
     <!-- Hero Header using the slider pattern -->
     <div class="home-slider" style="height: 40vh; min-height: 350px;">
       <div class="slides-container">
-        <div class="slide active" style="background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1589829085413-56de8ae18c73?q=80&w=2070&auto=format&fit=crop'); background-position: center;">
+        <div class="slide active" style="background-image: linear-gradient(135deg, rgba(8, 25, 18, 0.9) 0%, rgba(18, 51, 38, 0.75) 50%, rgba(0, 0, 0, 0.85) 100%), url('https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=2069&auto=format&fit=crop'); background-position: center;">
           <div class="slide-content anim-up">
             <h1 class="logo-text" style="font-size: 3rem;">Biblioteca Técnico-Legal</h1>
-            <p class="subtitle">Legislação, manuais técnicos, pareceres e relatórios oficiais</p>
+             <p class="subtitle" style="color: #fff; margin: 0 auto 30px auto; opacity: 0.9;">Legislação, manuais técnicos, pareceres e relatórios oficiais</p>
             <div style="position: relative; max-width: 600px; margin: 0 auto;">
                <input type="text" [(ngModel)]="searchQuery" (input)="filter()" placeholder="Pesquisar por título ou referência..." style="width: 100%; padding: 15px 20px 15px 50px; border: none; border-radius: 50px; font-size: 1.1rem; box-shadow: 0 4px 20px rgba(0,0,0,0.3); color: var(--ink-dark);">
                <span style="position: absolute; left: 20px; top: 15px; font-size: 1.2rem; color: var(--ink-muted);">🔍</span>

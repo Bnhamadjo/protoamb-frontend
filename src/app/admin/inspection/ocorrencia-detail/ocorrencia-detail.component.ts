@@ -11,93 +11,122 @@ import { AuthService } from '../../../core/auth';
   standalone: true,
   imports: [CommonModule, RouterModule],
   template: `
-    <div class="p-6" *ngIf="ocorrencia">
-      <div class="flex justify-between items-center mb-6">
-        <div>
-          <a routerLink="/admin/inspection/ocorrencias" class="text-blue-600 text-sm hover:underline">← Voltar para a lista</a>
-          <h1 class="text-3xl font-bold mt-2">{{ ocorrencia.titulo }}</h1>
-        </div>
-        <div class="flex gap-2">
-          <button class="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition">
-            Editar
-          </button>
-          <button class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition" (click)="delete()">
-            Eliminar
-          </button>
-        </div>
-      </div>
-
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div class="lg:col-span-2 space-y-6">
-          <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-            <h2 class="text-lg font-bold mb-4 border-b pb-2">Descrição</h2>
-            <p class="text-gray-700 whitespace-pre-wrap">{{ ocorrencia.descricao }}</p>
+    <div class="content-view anim-up" *ngIf="ocorrencia">
+      <header class="section-header">
+        <div class="header-left">
+          <a routerLink="/admin/inspection/ocorrencias" class="back-link">← Voltar à listagem</a>
+          <h1 class="section-title mt-2">{{ ocorrencia.titulo }}</h1>
+          <div class="meta-pills">
+             <span class="badge" [ngClass]="getStatusClass(ocorrencia.status)">{{ ocorrencia.status }}</span>
+             <span class="badge" [ngClass]="getGravidadeClass(ocorrencia.gravidade)">{{ ocorrencia.gravidade }}</span>
           </div>
+        </div>
+        <div class="header-right actions">
+          <button class="btn outline" [routerLink]="['/admin/inspection/ocorrencias', ocorrencia.id, 'edit']">
+            <span>✏️</span> Editar Registo
+          </button>
+          <button class="btn danger" (click)="delete()">
+             Eliminar
+          </button>
+        </div>
+      </header>
 
-          <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-            <div class="flex justify-between items-center mb-4 border-b pb-2">
-              <h2 class="text-lg font-bold">Evidências e Fotos</h2>
-              <button class="text-blue-600 font-medium hover:underline text-sm" (click)="fileInput.click()">
-                + Adicionar Foto
+      <div class="grid-layout mt-10">
+        <div class="main-column">
+          <section class="card mb-8">
+            <h2 class="card-title">Relatório Detalhado</h2>
+            <div class="description-box">
+              {{ ocorrencia.descricao }}
+            </div>
+          </section>
+
+          <section class="card">
+            <div class="flex-between mb-6">
+              <h2 class="card-title">Evidências e Documentação Visual</h2>
+              <button class="btn primary sm" (click)="fileInput.click()">
+                + Adicionar Evidência
               </button>
               <input #fileInput type="file" (change)="onFileSelected($event)" class="hidden" accept="image/*">
             </div>
             
-            <div class="grid grid-cols-2 md:grid-cols-3 gap-4" *ngIf="ocorrencia.evidencias?.length; else noEvidencias">
-              <div *ngFor="let ev of ocorrencia.evidencias" class="aspect-square bg-gray-100 rounded-lg overflow-hidden border group relative">
-                <img [src]="ev.arquivo_path" class="w-full h-full object-cover">
-                <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
-                   <a [href]="ev.arquivo_path" target="_blank" class="text-white text-xs font-bold underline">Ver Original</a>
+            <div class="gallery-grid" *ngIf="ocorrencia.evidencias?.length; else noEvidencias">
+              <div *ngFor="let ev of ocorrencia.evidencias" class="gallery-item">
+                <img [src]="ev.arquivo_path" class="gallery-img">
+                <div class="gallery-overlay">
+                   <a [href]="ev.arquivo_path" target="_blank" class="btn sm glass">Ver Original</a>
                 </div>
               </div>
             </div>
             <ng-template #noEvidencias>
-              <div class="p-8 text-center text-gray-400 bg-gray-50 rounded-lg border border-dashed">
-                Nenhuma evidência registada para esta ocorrência.
+              <div class="empty-illustration">
+                <p class="muted">Nenhuma foto ou documento anexado a esta ocorrência.</p>
               </div>
             </ng-template>
-          </div>
+          </section>
         </div>
 
-        <div class="space-y-6">
-          <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 text-sm">
-            <h2 class="text-lg font-bold mb-4 border-b pb-2">Informações</h2>
-            <div class="space-y-4">
-              <div>
-                <label class="text-gray-400 uppercase text-[10px] font-bold block mb-1">Status</label>
-                <div class="inline-block px-3 py-1 rounded-full text-xs font-bold uppercase transition" [ngClass]="getStatusClass(ocorrencia.status)">
-                  {{ ocorrencia.status }}
-                </div>
+        <aside class="side-column">
+          <div class="card info-sticky">
+            <h2 class="card-title mb-6">Metadados e Rastreio</h2>
+            <div class="info-list">
+              <div class="info-item">
+                 <label>Localização Geográfica</label>
+                 <p>{{ ocorrencia.localizacao || 'Coordenadas: ' + ocorrencia.latitude + ', ' + ocorrencia.longitude }}</p>
               </div>
-              <div>
-                <label class="text-gray-400 uppercase text-[10px] font-bold block mb-1">Gravidade</label>
-                <div class="inline-block px-3 py-1 rounded-full text-xs font-bold uppercase" [ngClass]="getGravidadeClass(ocorrencia.gravidade)">
-                  {{ ocorrencia.gravidade }}
-                </div>
+              <div class="info-item">
+                 <label>Equipa Responsável</label>
+                 <p class="text-brand font-bold" *ngIf="ocorrencia.equipa; else noEquipa">
+                   {{ ocorrencia.equipa.nome }}
+                 </p>
+                 <ng-template #noEquipa>
+                   <p class="muted italic">Pendente de atribuição</p>
+                 </ng-template>
               </div>
-              <div>
-                <label class="text-gray-400 uppercase text-[10px] font-bold block mb-1">Localização</label>
-                <p class="font-medium">{{ ocorrencia.localizacao || 'Coordenadas: ' + ocorrencia.latitude + ', ' + ocorrencia.longitude }}</p>
+              <div class="info-item">
+                 <label>Data Crítica</label>
+                 <p>{{ (ocorrencia.data_ocorrencia || ocorrencia.created_at) | date:'dd MMMM yyyy, HH:mm' }}</p>
               </div>
-              <div>
-                <label class="text-gray-400 uppercase text-[10px] font-bold block mb-1">Equipa Atribuída</label>
-                <p class="font-medium text-blue-600 cursor-pointer hover:underline" *ngIf="ocorrencia.equipa; else noEquipa">
-                  {{ ocorrencia.equipa.nome }}
-                </p>
-                <ng-template #noEquipa>
-                  <p class="text-gray-400 italic">Nenhuma equipa atribuída</p>
-                </ng-template>
-              </div>
-              <div>
-                <label class="text-gray-400 uppercase text-[10px] font-bold block mb-1">Data da Ocorrência</label>
-                <p>{{ (ocorrencia.data_ocorrencia || ocorrencia.created_at) | date:'medium' }}</p>
+              <div class="info-item">
+                 <label>ID de Auditoria</label>
+                 <p class="muted font-mono text-xs">{{ ocorrencia.id }}</p>
               </div>
             </div>
           </div>
-        </div>
+        </aside>
       </div>
     </div>
-  `
+  `,
+  styles: [`
+    .section-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 40px; border-bottom: 1px solid var(--border); padding-bottom: 30px; }
+    .back-link { font-weight: 800; color: var(--ink-light); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; }
+    .back-link:hover { color: var(--brand); }
+    .meta-pills { display: flex; gap: 10px; margin-top: 15px; }
+
+    .grid-layout { display: grid; grid-template-columns: 2fr 1fr; gap: 40px; }
+    .card-title { font-size: 1.25rem; font-weight: 800; color: var(--brand); font-family: 'Fraunces'; margin-bottom: 20px; }
+    .description-box { font-size: 1.1rem; line-height: 1.8; color: var(--ink-muted); white-space: pre-wrap; }
+
+    .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
+    .gallery-item { border-radius: var(--radius-md); overflow: hidden; position: relative; aspect-ratio: 4/3; box-shadow: var(--shadow); }
+    .gallery-img { width: 100%; height: 100%; object-fit: cover; transition: var(--transition); }
+    .gallery-item:hover .gallery-img { transform: scale(1.05); }
+    .gallery-overlay { position: absolute; inset: 0; background: rgba(6, 38, 29, 0.4); display: flex; align-items: center; justify-content: center; opacity: 0; transition: var(--transition-fast); }
+    .gallery-item:hover .gallery-overlay { opacity: 1; }
+
+    .info-list { display: flex; flex-direction: column; gap: 20px; }
+    .info-item label { color: var(--ink-light); text-transform: uppercase; font-size: 0.65rem; font-weight: 900; letter-spacing: 1.5px; margin-bottom: 5px; display: block; }
+    .info-item p { margin: 0; font-size: 0.95rem; font-weight: 600; color: var(--brand); }
+
+    .badge { padding: 6px 12px; border-radius: 8px; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; }
+    .status-pendente { background: #fef3c7; color: #92400e; }
+    .status-analise { background: #dbeafe; color: #1e40af; }
+    .status-resolvida { background: #dcfce7; color: #166534; }
+    .grav-critica, .grav-alta { background: #fee2e2; color: #991b1b; }
+    .grav-media { background: #ffedd5; color: #9a3412; }
+    .grav-baixa { background: #f0fdf4; color: #166534; }
+
+    @media (max-width: 1024px) { .grid-layout { grid-template-columns: 1fr; } }
+  `]
 })
 export class OcorrenciaDetailComponent implements OnInit {
   ocorrencia?: Ocorrencia;
@@ -146,20 +175,20 @@ export class OcorrenciaDetailComponent implements OnInit {
   }
 
   getStatusClass(status: string) {
-    switch (status) {
-      case 'pendente': return 'bg-yellow-100 text-yellow-800';
-      case 'em analise': return 'bg-blue-100 text-blue-800';
-      case 'resolvida': return 'bg-green-100 text-green-800';
-      default: return 'bg-gray-100 text-gray-800';
+    switch (status?.toLowerCase()) {
+      case 'pendente': return 'status-pendente';
+      case 'em analise': return 'status-analise';
+      case 'resolvida': return 'status-resolvida';
+      default: return 'status-pendente';
     }
   }
 
   getGravidadeClass(gravidade: string) {
-    switch (gravidade) {
+    switch (gravidade?.toLowerCase()) {
       case 'alta':
-      case 'critica': return 'bg-red-100 text-red-800 border border-red-200';
-      case 'media': return 'bg-orange-100 text-orange-800 border border-orange-200';
-      default: return 'bg-blue-100 text-blue-800 border border-blue-200';
+      case 'critica': return 'grav-critica';
+      case 'media': return 'grav-media';
+      default: return 'grav-baixa';
     }
   }
 }

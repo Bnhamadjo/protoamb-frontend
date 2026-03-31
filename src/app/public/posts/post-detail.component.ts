@@ -76,6 +76,9 @@ import { SeoService } from '../../services/seo.service';
       text-align: justify;
       text-wrap: pretty;
       hyphens: auto;
+      overflow-wrap: break-word;
+      word-wrap: break-word;
+      word-break: break-word;
     }
     .content ::ng-deep p,
     .content ::ng-deep li {

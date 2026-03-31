@@ -234,7 +234,7 @@ export class PublicSolutionsComponent implements OnInit {
       { name: 'Fiscalizacao ambiental', summary: 'Registo de ocorrencias, alertas e acompanhamento de casos em campo.', link: '/ocorrencias', audience: 'Inspecao e controlo', status: 'active' },
       { name: 'Extensao agricola', summary: 'Campanhas, orientacoes tecnicas e disseminacao de boas praticas para produtores.', link: '/extensao-agricola', audience: 'Agricultura e desenvolvimento rural', status: 'pilot' },
       { name: 'Biblioteca tecnico-legal', summary: 'Centralize legislacao, relatorios, manuais e anexos PDF num ambiente unico.', link: '/biblioteca-legal', audience: 'Tecnicos e juristas', status: 'active' },
-      { name: 'Coordenacao interdepartamental', summary: 'Estrutura o portal para novos departamentos e linhas programaticas do Estado.', link: '/solutions', audience: 'Gestao institucional', status: 'planned' }
+      { name: 'Coordenacao interdepartamental', summary: 'Hub de integracao ministerial, partilha de recursos tecnicos e coordenacao de projetos.', link: '/interdepartamental', audience: 'Gestao institucional', status: 'active' }
     ];
   }
 

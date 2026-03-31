@@ -93,6 +93,20 @@ import { MenuService, Menu, MenuItem } from '../../admin/menus/services/menu.ser
       color: var(--brand);
       padding-left: 25px;
     }
+
+    @media (max-width: 900px) {
+      .menu-root { flex-direction: column; gap: 8px; align-items: flex-start; }
+      .menu-item { width: 100%; border-bottom: 1px solid rgba(0,0,0,0.05); padding: 12px 0; }
+      .menu-item > a { font-size: 1.1rem; width: 100%; justify-content: space-between; }
+      .submenu { 
+        position: static; opacity: 1; visibility: visible; 
+        transform: none; box-shadow: none; border: none; 
+        padding: 5px 0 0 15px; min-width: auto; 
+        display: block; width: 100%; background: transparent;
+      }
+      .menu-item:hover .submenu { transform: none; }
+      .submenu li a { padding: 10px 0; border-bottom: none; }
+    }
   `]
 })
 export class PublicMenuComponent implements OnInit, OnChanges {

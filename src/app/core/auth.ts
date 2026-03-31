@@ -14,21 +14,38 @@ export class AuthService {
   login(data: { email: string; password: string }) {
     // NADA de headers manuais aqui
     return this.http.post(`${this.API}/login`, data).pipe(
-      tap((res: any) => localStorage.setItem('token', res.token))
+      tap((res: any) => {
+        localStorage.setItem('token', res.token);
+        localStorage.setItem('user', JSON.stringify(res.user));
+      })
     );
   }
 
   getToken()   { return localStorage.getItem('token'); }
   getUser()    { 
-    const token = this.getToken();
-    if (!token) return null;
-    try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      return payload;
-    } catch {
-      return null;
-    }
+    const u = localStorage.getItem('user');
+    return u ? JSON.parse(u) : null;
   }
+
+  hasRole(roles: string[]): boolean {
+    const user = this.getUser();
+    return user && roles.includes(user.role);
+  }
+
   isLogged()   { return !!this.getToken(); }
-  logout()     { localStorage.removeItem('token'); }
+  
+  logout() { 
+    this.http.post(`${this.API}/logout`, {}).subscribe({
+      next: () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        window.location.href = '/login';
+      },
+      error: () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        window.location.href = '/login';
+      }
+    });
+  }
 }

@@ -8,48 +8,62 @@ import { InspectionService, Ocorrencia } from '../services/inspection.service';
   standalone: true,
   imports: [CommonModule, RouterModule],
   template: `
-    <div class="p-6">
-      <div class="flex justify-between items-center mb-6">
-        <h1 class="text-2xl font-bold">Ocorrências Ambientais</h1>
-        <button class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition" [routerLink]="['/admin/inspection/ocorrencias/new']">
-          Nova Ocorrência
-        </button>
-      </div>
+    <div class="content-view anim-up">
+      <header class="section-header">
+        <div class="header-left">
+          <div class="section-kicker">Fiscalização & Controlo</div>
+          <h1 class="section-title">Ocorrências Ambientais</h1>
+        </div>
+        <div class="header-right">
+          <button class="btn primary lg" [routerLink]="['/admin/inspection/ocorrencias/new']">
+            <span>+</span> Nova Ocorrência
+          </button>
+        </div>
+      </header>
 
-      <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-        <table class="w-full text-left border-collapse">
+      <div class="table-container shadow-lg mt-8">
+        <table class="table">
           <thead>
-            <tr class="bg-gray-50 border-b border-gray-100">
-              <th class="p-4 font-semibold text-gray-600">Título</th>
-              <th class="p-4 font-semibold text-gray-600">Tipo</th>
-              <th class="p-4 font-semibold text-gray-600">Status</th>
-              <th class="p-4 font-semibold text-gray-600">Gravidade</th>
-              <th class="p-4 font-semibold text-gray-600">Data</th>
-              <th class="p-4 font-semibold text-gray-600 text-right">Ações</th>
+            <tr>
+              <th width="35%">Título da Ocorrência</th>
+              <th>Categoria</th>
+              <th>Estado</th>
+              <th>Gravidade</th>
+              <th>Data de Registo</th>
+              <th class="text-right">Ações</th>
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let item of ocorrencias" class="border-b border-gray-50 hover:bg-gray-50 transition cursor-pointer" [routerLink]="['/admin/inspection/ocorrencias', item.id]">
-              <td class="p-4 font-medium">{{ item.titulo }}</td>
-              <td class="p-4">{{ item.tipo }}</td>
-              <td class="p-4">
-                <span class="px-2 py-1 rounded-full text-xs font-medium" [ngClass]="getStatusClass(item.status)">
+            <tr *ngFor="let item of ocorrencias" class="clickable-row" [routerLink]="['/admin/inspection/ocorrencias', item.id]">
+              <td>
+                <div class="title-cell">
+                  <span class="main-text">{{ item.titulo }}</span>
+                  <span class="sub-text">{{ item.id }}</span>
+                </div>
+              </td>
+              <td>{{ item.tipo }}</td>
+              <td>
+                <span class="badge" [ngClass]="getStatusClass(item.status)">
                   {{ item.status }}
                 </span>
               </td>
-              <td class="p-4">
-                <span class="px-2 py-1 rounded-full text-xs font-medium" [ngClass]="getGravidadeClass(item.gravidade)">
+              <td>
+                <span class="badge" [ngClass]="getGravidadeClass(item.gravidade)">
                   {{ item.gravidade }}
                 </span>
               </td>
-              <td class="p-4 text-gray-500 text-sm">{{ item.created_at | date:'dd/MM/yyyy HH:mm' }}</td>
-              <td class="p-4 text-right">
-                <button class="text-blue-600 hover:text-blue-800">Ver detalhes</button>
+              <td class="muted">{{ item.created_at | date:'dd MMM yyyy, HH:mm' }}</td>
+              <td class="text-right">
+                <button class="btn sm ghost">Gerir recurso</button>
               </td>
             </tr>
             <tr *ngIf="ocorrencias.length === 0">
-              <td colspan="6" class="p-8 text-center text-gray-400 italic">
-                Nenhuma ocorrência registada.
+              <td colspan="6">
+                <div class="empty-illustration">
+                  <h3>Nenhuma ocorrência registada</h3>
+                  <p class="muted">Os alertas de fiscalização ambiental aparecerão nesta listagem assim que forem criados.</p>
+                  <button class="btn outline sm" [routerLink]="['/admin/inspection/ocorrencias/new']">Registar primeira ocorrência</button>
+                </div>
               </td>
             </tr>
           </tbody>
@@ -58,10 +72,27 @@ import { InspectionService, Ocorrencia } from '../services/inspection.service';
     </div>
   `,
   styles: [`
-    .status-pending { background-color: #fef3c7; color: #92400e; }
-    .status-investigating { background-color: #dbeafe; color: #1e40af; }
-    .status-resolved { background-color: #dcfce7; color: #166534; }
-    .status-archived { background-color: #f3f4f6; color: #374151; }
+    .section-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 40px; }
+    .title-cell { display: flex; flex-direction: column; }
+    .main-text { font-weight: 800; color: var(--brand); font-size: 1.05rem; }
+    .sub-text { font-size: 0.75rem; color: var(--ink-light); text-transform: uppercase; letter-spacing: 1px; }
+    
+    .badge { 
+      padding: 6px 12px; border-radius: 8px; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;
+      display: inline-flex; align-items: center; gap: 6px;
+    }
+    .badge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+
+    .status-pendente { background: #fef3c7; color: #92400e; }
+    .status-analise { background: #dbeafe; color: #1e40af; }
+    .status-resolvida { background: #dcfce7; color: #166534; }
+    
+    .grav-critica, .grav-alta { background: #fee2e2; color: #991b1b; }
+    .grav-media { background: #ffedd5; color: #9a3412; }
+    .grav-baixa { background: #f0fdf4; color: #166534; }
+
+    .clickable-row { cursor: pointer; transition: var(--transition-fast); }
+    .clickable-row:hover { background: var(--surface-hover); }
   `]
 })
 export class OcorrenciasListComponent implements OnInit {
@@ -80,20 +111,20 @@ export class OcorrenciasListComponent implements OnInit {
   }
 
   getStatusClass(status: string) {
-    switch (status) {
-      case 'pendente': return 'bg-yellow-100 text-yellow-800';
-      case 'em analise': return 'bg-blue-100 text-blue-800';
-      case 'resolvida': return 'bg-green-100 text-green-800';
-      default: return 'bg-gray-100 text-gray-800';
+    switch (status?.toLowerCase()) {
+      case 'pendente': return 'status-pendente';
+      case 'em analise': return 'status-analise';
+      case 'resolvida': return 'status-resolvida';
+      default: return 'status-pendente';
     }
   }
 
   getGravidadeClass(gravidade: string) {
-    switch (gravidade) {
+    switch (gravidade?.toLowerCase()) {
       case 'alta':
-      case 'critica': return 'bg-red-100 text-red-800';
-      case 'media': return 'bg-orange-100 text-orange-800';
-      default: return 'bg-blue-100 text-blue-800';
+      case 'critica': return 'grav-critica';
+      case 'media': return 'grav-media';
+      default: return 'grav-baixa';
     }
   }
 }

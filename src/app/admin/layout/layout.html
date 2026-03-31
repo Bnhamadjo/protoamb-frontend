@@ -1,79 +1,163 @@
-<div class="admin-wrapper">
-  <aside class="sidebar">
+<div class="admin-wrapper" [class.sidebar-open]="sidebarOpen">
+  <div class="sidebar-overlay" (click)="toggleSidebar()"></div>
+  
+  <aside class="sidebar" [class.open]="sidebarOpen">
     <div class="sidebar-header">
-      <img src="logo.png" alt="Logo" class="sidebar-logo">
-      <div class="sidebar-title">
-        <h3>protoAmb</h3>
-        <p>Plataforma MAB</p>
+      <div class="logo-box">
+        <img [src]="logoAdmin" alt="Logo" class="sidebar-logo" onerror="this.src='https://mab.gov.gw/img/logo.png'">
       </div>
+      <div class="sidebar-title">
+        <h3>Plataforma <span class="text-accent">MAB</span></h3>
+        <p>Governo da Guiné-Bissau</p>
+      </div>
+      <button class="close-sidebar-mobile" (click)="toggleSidebar()">✕</button>
     </div>
 
-    <div class="view-site-link">
-      <a href="/" target="_blank" class="btn btn-view-site">Ir para o Site</a>
+    <div class="view-site-box">
+      <a href="/" target="_blank" class="btn-view-site">
+        <span class="icon">🌍</span> Ver Portal Público
+      </a>
     </div>
 
-    <nav class="menu">
-      <a routerLink="/admin/dashboard" routerLinkActive="active">
-        <span>Dashboard</span> Visao Geral
-      </a>
-      <a routerLink="/admin/pages" routerLinkActive="active">
-        <span>Paginas</span> Conteudo institucional
-      </a>
-      <a routerLink="/admin/posts" routerLinkActive="active">
-        <span>Posts</span> Editorial e comunicacao
-      </a>
-      <a routerLink="/admin/biodiversity" routerLinkActive="active">
-        <span>Biodiv</span> Biodiversidade
-      </a>
-      <a routerLink="/admin/areas" routerLinkActive="active">
-        <span>Areas</span> Territorio protegido
-      </a>
-      <a routerLink="/admin/menus" routerLinkActive="active">
-        <span>Menus</span> Navegacao publica
-      </a>
-      <a routerLink="/admin/complaints" routerLinkActive="active">
-        <span>Den</span> Denuncias
-      </a>
+    <nav class="menu custom-scrollbar">
       
-      <div class="menu-divider"></div>
+      <div class="menu-label">Principal</div>
+      <a routerLink="/admin/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" (click)="sidebarOpen = false">
+        <span class="icon">📊</span>
+        <div class="menu-text"><span>Dashboard</span> Visão Global</div>
+      </a>
+
+      <div class="menu-label">Sistemas SIRE & Operações</div>
       
-      <a routerLink="/admin/inspection/ocorrencias" routerLinkActive="active">
-        <span>Ocorr</span> Ocorrencias
+      <!-- Resíduos Group -->
+      <div *ngIf="auth.hasRole(['admin', 'tecnico', 'auditor'])" class="menu-group" [class.open]="true">
+        <a routerLink="/admin/waste" routerLinkActive="active" class="group-parent" (click)="sidebarOpen = false">
+          <span class="icon">♻️</span>
+          <div class="menu-text"><span>Resíduos</span> Produção MAB</div>
+        </a>
+        <div class="sub-menu">
+          <a routerLink="/admin/waste/transporters" routerLinkActive="sub-active" (click)="sidebarOpen = false">
+            <span class="dot"></span> Operadores
+          </a>
+          <a routerLink="/admin/waste/reports" routerLinkActive="sub-active" (click)="sidebarOpen = false">
+            <span class="dot"></span> Relatórios Digitais
+          </a>
+        </div>
+      </div>
+
+      <!-- Qualidade Group -->
+      <div *ngIf="auth.hasRole(['admin', 'tecnico', 'auditor'])" class="menu-group">
+        <a routerLink="/admin/quality" routerLinkActive="active" class="group-parent" (click)="sidebarOpen = false">
+          <span class="icon">🌬️</span>
+          <div class="menu-text"><span>Qualidade</span> Monitorização</div>
+        </a>
+        <div class="sub-menu">
+          <a *ngIf="auth.hasRole(['admin', 'tecnico'])" routerLink="/admin/quality/new" routerLinkActive="sub-active" (click)="sidebarOpen = false">
+            <span class="dot"></span> Novo Registo
+          </a>
+        </div>
+      </div>
+
+      <div class="menu-label">Conteúdo Institucional</div>
+      <a *ngIf="auth.hasRole(['admin', 'tecnico'])" routerLink="/admin/pages" routerLinkActive="active" (click)="sidebarOpen = false">
+        <span class="icon">📄</span>
+        <div class="menu-text"><span>Páginas</span> Institucional</div>
       </a>
-      <a routerLink="/admin/inspection/missoes" routerLinkActive="active">
-        <span>Missoes</span> Missões de Campo
+      <a *ngIf="auth.hasRole(['admin', 'tecnico'])" routerLink="/admin/posts" routerLinkActive="active" (click)="sidebarOpen = false">
+        <span class="icon">✍️</span>
+        <div class="menu-text"><span>Posts</span> Notícias</div>
       </a>
-      <a routerLink="/admin/inspection/teams" routerLinkActive="active">
-        <span>Equipas</span> Equipas Tecnicas
+      <a *ngIf="auth.hasRole(['admin', 'tecnico', 'auditor'])" routerLink="/admin/biodiversity" routerLinkActive="active" (click)="sidebarOpen = false">
+        <span class="icon">🦋</span>
+        <div class="menu-text"><span>Biodiv</span> Fauna & Flora</div>
       </a>
-      
-      <div class="menu-divider"></div>
-      <a routerLink="/admin/media" routerLinkActive="active">
-        <span>Media</span> Biblioteca
+      <a *ngIf="auth.hasRole(['admin', 'tecnico', 'auditor'])" routerLink="/admin/areas" routerLinkActive="active" (click)="sidebarOpen = false">
+        <span class="icon">🗺️</span>
+        <div class="menu-text"><span>Áreas</span> Protegidas</div>
       </a>
-      <a routerLink="/admin/settings" routerLinkActive="active">
-        <span>MAB</span> Plataforma
+
+      <div class="menu-label">Relações Internacionais</div>
+      <a *ngIf="auth.hasRole(['admin', 'tecnico', 'auditor'])" routerLink="/admin/partners" routerLinkActive="active" (click)="sidebarOpen = false">
+        <span class="icon">🤝</span>
+        <div class="menu-text"><span>Parceiros</span> Estaduais</div>
+      </a>
+      <a *ngIf="auth.hasRole(['admin', 'tecnico', 'auditor'])" routerLink="/admin/conventions" routerLinkActive="active" (click)="sidebarOpen = false">
+        <span class="icon">📜</span>
+        <div class="menu-text"><span>Tratados</span> Convenções</div>
+      </a>
+
+      <div class="menu-label">Fiscalização & Denúncias</div>
+      <a *ngIf="auth.hasRole(['admin', 'tecnico', 'auditor'])" routerLink="/admin/complaints" routerLinkActive="active" (click)="sidebarOpen = false">
+        <span class="icon">🚨</span>
+        <div class="menu-text"><span>Denúncias</span> Linha MAB</div>
+      </a>
+      <a *ngIf="auth.hasRole(['admin', 'tecnico'])" routerLink="/admin/inspection/ocorrencias" routerLinkActive="active" (click)="sidebarOpen = false">
+        <span class="icon">🔍</span>
+        <div class="menu-text"><span>Ocorr</span> Inspeções</div>
+      </a>
+      <a *ngIf="auth.hasRole(['admin', 'tecnico'])" routerLink="/admin/inspection/missoes" routerLinkActive="active" (click)="sidebarOpen = false">
+        <span class="icon">🏗️</span>
+        <div class="menu-text"><span>Missões</span> Campo</div>
+      </a>
+
+      <div class="menu-label">Configuração</div>
+      <a *ngIf="auth.hasRole(['admin'])" routerLink="/admin/menus" routerLinkActive="active" (click)="sidebarOpen = false">
+        <span class="icon">🔗</span>
+        <div class="menu-text"><span>Menus</span> Navegação</div>
+      </a>
+      <a *ngIf="auth.hasRole(['admin', 'tecnico'])" routerLink="/admin/media" routerLinkActive="active" (click)="sidebarOpen = false">
+        <span class="icon">📁</span>
+        <div class="menu-text"><span>Media</span> Biblioteca</div>
+      </a>
+      <a *ngIf="auth.hasRole(['admin'])" routerLink="/admin/users" routerLinkActive="active" (click)="sidebarOpen = false">
+        <span class="icon">👥</span>
+        <div class="menu-text"><span>Utilizadores</span> Gestão Acessos</div>
+      </a>
+      <a *ngIf="auth.hasRole(['admin'])" routerLink="/admin/integrations" routerLinkActive="active" (click)="sidebarOpen = false">
+        <span class="icon">🔌</span>
+        <div class="menu-text"><span>Integrações</span> API Externa</div>
+      </a>
+      <a *ngIf="auth.hasRole(['admin', 'tecnico'])" routerLink="/admin/chemicals" routerLinkActive="active" (click)="sidebarOpen = false">
+        <span class="icon">🧪</span>
+        <div class="menu-text"><span>Químicos</span> Inventário</div>
+      </a>
+      <a *ngIf="auth.hasRole(['admin'])" routerLink="/admin/settings" routerLinkActive="active" (click)="sidebarOpen = false">
+        <span class="icon">⚙️</span>
+        <div class="menu-text"><span>Definições</span> Plataforma</div>
       </a>
     </nav>
 
-    <div style="margin-top: auto; padding: 20px 10px; opacity: 0.72; font-size: 0.8rem; border-top: 1px solid rgba(255,255,255,0.1);">
-      <p style="margin:0">Guine-Bissau</p>
-      <p style="margin:5px 0 0">Ambiente - Agricultura - Estado Digital</p>
+    <div class="sidebar-footer">
+      <div class="location">
+        <span>📍</span> Guiné-Bissau
+      </div>
+      <div class="copyright">© 2026 Ministério do Ambiente</div>
     </div>
   </aside>
 
   <div class="content-wrapper">
     <header class="top-bar">
-      <div class="breadcrumb">
-        <span style="color: var(--ink-muted); font-size: 0.9rem;">Admin</span> /
-        <strong style="color: var(--brand);">Centro da Plataforma</strong>
-      </div>
-      <div class="user-profile" style="display: flex; align-items: center; gap: 15px;">
-        <div style="text-align: right;">
-          <div style="font-weight: 600; font-size: 0.9rem;">Administrador</div>
-          <div style="font-size: 0.75rem; color: var(--ink-muted);">Sessao autenticada</div>
+      <div class="top-left">
+        <button class="hamburger-btn" (click)="toggleSidebar()">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+        <div class="breadcrumb hide-mobile">
+          <span class="bc-admin">Admin</span>
+          <span class="bc-sep">/</span>
+          <strong class="bc-current text-gradient">Centro Governamental</strong>
         </div>
-        <button class="btn ghost sm" style="padding: 5px; border: none; font-size: 1.2rem;">Conta</button>
+      </div>
+      <div class="top-actions">
+        <div class="user-info hide-mobile" *ngIf="auth.getUser() as user">
+          <div class="avatar">{{ user.name.substring(0,2).toUpperCase() }}</div>
+          <div class="details">
+            <span class="name">{{ user.name }}</span>
+            <span class="role">{{ user.role | titlecase }} MAB</span>
+          </div>
+        </div>
+        <button (click)="logout()" class="logout-btn">Sair</button>
       </div>
     </header>
 

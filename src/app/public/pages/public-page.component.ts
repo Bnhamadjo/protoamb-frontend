@@ -38,7 +38,7 @@ import { SeoService } from '../../services/seo.service';
   `,
   styles: [`
     .page-content ::ng-deep img { max-width: 100%; border-radius: var(--radius-sm); margin: 20px 0; }
-    .page-content ::ng-deep h2 { margin-top: 40px; color: var(--brand); }
+    .page-content ::ng-deep h2 { margin-top: 40px; color: var(--brand); font-family: "Fraunces", serif; }
     .page-content ::ng-deep p { margin-bottom: 20px; text-align: justify; }
     .page-content ::ng-deep li { text-align: justify; line-height: 1.8; }
     .page-content ::ng-deep blockquote {
@@ -48,7 +48,12 @@ import { SeoService } from '../../services/seo.service';
       border-left: 4px solid var(--primary);
       border-radius: 0 16px 16px 0;
     }
-    .container { max-width: 1000px; margin: 0 auto; padding: 0 20px; }
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+    .card.page-content { overflow: hidden; padding: 60px !important; }
+    @media (max-width: 768px) {
+      .card.page-content { padding: 30px !important; }
+      .container { padding: 0 15px; }
+    }
   `]
 })
 export class PublicPageComponent implements OnInit {
