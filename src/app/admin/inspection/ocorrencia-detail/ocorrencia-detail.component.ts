@@ -143,8 +143,14 @@ export class OcorrenciaDetailComponent implements OnInit {
   ngOnInit() {
     const id = Number(this.route.snapshot.paramMap.get('id'));
     if (id) {
-      this.inspectionService.getOcorrencia(id).subscribe((data: Ocorrencia) => {
-        this.ocorrencia = data;
+      this.inspectionService.getOcorrencia(id).subscribe({
+        next: (data: Ocorrencia) => {
+          this.ocorrencia = data;
+        },
+        error: (err) => {
+          console.error('Error loading occurrence:', err);
+          this.toast.error('Ocorreu um erro ao carregar os dados da ocorrência.');
+        }
       });
     }
   }

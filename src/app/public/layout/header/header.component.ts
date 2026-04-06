@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { SettingsService } from '../../../services/settings.service';
 import { PublicMenuComponent } from '../../../components/public-menu/public-menu.component';
+import { AuthService } from '../../../core/auth';
 
 @Component({
   standalone: true,
@@ -37,7 +38,9 @@ import { PublicMenuComponent } from '../../../components/public-menu/public-menu
             </div>
             
             <div class="auth-btn">
-              <a routerLink="/login" class="btn primary sm" (click)="menuOpen = false">Acesso Admin</a>
+              <a [routerLink]="auth.isLogged() ? '/admin' : '/login'" class="btn primary sm" (click)="menuOpen = false">
+                {{ auth.isLogged() ? 'Aceder ao Portal' : 'Acesso Admin' }}
+              </a>
             </div>
           </div>
         </div>
@@ -169,7 +172,10 @@ export class PublicHeaderComponent implements OnInit {
     }
   }
 
-  constructor(private settingsService: SettingsService) { }
+  constructor(
+    private settingsService: SettingsService,
+    public auth: AuthService
+  ) { }
 
   ngOnInit(): void {
     this.currentLang = localStorage.getItem('portal_lang') || 'pt';

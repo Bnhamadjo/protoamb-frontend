@@ -642,7 +642,7 @@ export class SettingsFormComponent implements OnInit {
         this.settings.about_section_title = res.about_section_title || 'Sobre o MINISTÉRIO';
         this.settings.about_section_text = res.about_section_text || 'Missão de promoção do desenvolvimento sustentável através da preservação, proteção e conservação do ambiente.';
         this.settings.about_section_button_text = res.about_section_button_text || 'Ver Missão e Visão';
-        this.settings.about_section_button_link = res.about_section_button_link || '/pages/sobre-nos';
+        this.settings.about_section_button_link = res.about_section_button_link || '/pages/quem-somos';
         this.settings.about_section_image = res.about_section_image || '';
         this.settings.water_hub_stats = {
           label1: res.water_hub_stats?.label1 || '',
@@ -695,7 +695,7 @@ export class SettingsFormComponent implements OnInit {
       { name: 'Fiscalização ambiental', summary: 'Registo de ocorrências e missões em campo.', link: '/denuncias', audience: 'Inspeção e controlo', status: 'active' },
       { name: 'Extensão agrícola', summary: 'Orientação e campanhas para produtores.', link: '/posts', audience: 'Agricultura', status: 'pilot' },
       { name: 'Biblioteca técnico-legal', summary: 'Centralize legislação e manuais.', link: '/posts', audience: 'Direções técnicas', status: 'active' },
-      { name: 'Gestão interdepartamental', summary: 'Estrutura para novos departamentos.', link: '/pages/sobre-nos', audience: 'Administração do Estado', status: 'planned' }
+      { name: 'Gestão interdepartamental', summary: 'Estrutura para novos departamentos.', link: '/pages/quem-somos', audience: 'Administração do Estado', status: 'planned' }
     ];
   }
 

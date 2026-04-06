@@ -288,6 +288,26 @@ export const routes: Routes = [
         loadComponent: () => import('./public/agricultura/agricultura.component').then(m => m.AgriculturaComponent)
       },
 
+      // Explorador de Dados (Data Explorer)
+      {
+        path: 'explorer',
+        data: { roles: ['admin', 'tecnico', 'auditor'] },
+        children: [
+          { 
+            path: '', 
+            loadComponent: () => import('./admin/explorer/explorer-list/explorer-list.component').then(m => m.ExplorerListComponent) 
+          },
+          { 
+            path: 'new', 
+            loadComponent: () => import('./admin/explorer/query-builder/query-builder.component').then(m => m.QueryBuilderComponent) 
+          },
+          { 
+            path: ':id', 
+            loadComponent: () => import('./admin/explorer/explorer-view/explorer-view.component').then(m => m.ExplorerViewComponent) 
+          },
+        ]
+      },
+
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
     ]
   },
@@ -352,9 +372,10 @@ export const routes: Routes = [
         loadComponent: () => import('./public/posts/post-detail.component').then(m => m.PublicPostDetailComponent) 
       },
       { 
-        path: 'denuncias', 
+        path: 'denunciar', 
         loadComponent: () => import('./public/complaints/complaint-form.component').then(m => m.PublicComplaintFormComponent) 
       },
+      { path: 'denuncias', redirectTo: 'denunciar', pathMatch: 'full' },
       { 
         path: 'ocorrencias', 
         loadComponent: () => import('./public/inspection/public-inspection-hub.component').then(m => m.PublicInspectionHubComponent) 

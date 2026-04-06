@@ -10,6 +10,7 @@ export interface Post {
   body: string;
   excerpt?: string;
   featured_image?: string | null;
+  featured_image_caption?: string | null;
   document_file?: string | null;
   document_label?: string | null;
   status: 'draft' | 'published';
@@ -29,22 +30,22 @@ export class PostService {
   constructor(private http: HttpClient) {}
 
   all(): Observable<Post[]> {
-    return this.http.get<Post[]>(this.API).pipe(timeout(15000));
+    return this.http.get<Post[]>(this.API).pipe(timeout(30000));
   }
 
   show(slug: string): Observable<Post> {
-    return this.http.get<Post>(`${this.API}/${slug}`).pipe(timeout(15000));
+    return this.http.get<Post>(`${this.API}/${slug}`).pipe(timeout(30000));
   }
 
   create(data: Post): Observable<Post> {
-    return this.http.post<Post>(this.API, data).pipe(timeout(15000));
+    return this.http.post<Post>(this.API, data).pipe(timeout(30000));
   }
 
   update(id: number, data: Post): Observable<Post> {
-    return this.http.put<Post>(`${this.API}/${id}`, data).pipe(timeout(15000));
+    return this.http.put<Post>(`${this.API}/${id}`, data).pipe(timeout(30000));
   }
 
   delete(id: number) {
-    return this.http.delete(`${this.API}/${id}`).pipe(timeout(15000));
+    return this.http.delete(`${this.API}/${id}`).pipe(timeout(30000));
   }
 }

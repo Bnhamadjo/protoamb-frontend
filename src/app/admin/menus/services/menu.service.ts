@@ -34,22 +34,22 @@ export class MenuService {
   }
 
   show(id: number): Observable<Menu> {
-    return this.http.get<Menu>(`${this.API}/${id}`);
+    return this.http.get<Menu>(`${this.API}/${id}`).pipe(timeout(30000));
   }
 
   create(data: Partial<Menu>): Observable<Menu> {
-    return this.http.post<Menu>(this.API, data);
+    return this.http.post<Menu>(this.API, data).pipe(timeout(30000));
   }
 
   update(id: number, data: Partial<Menu>): Observable<Menu> {
-    return this.http.put<Menu>(`${this.API}/${id}`, data);
+    return this.http.put<Menu>(`${this.API}/${id}`, data).pipe(timeout(30000));
   }
 
   delete(id: number) {
-    return this.http.delete(`${this.API}/${id}`);
+    return this.http.delete(`${this.API}/${id}`).pipe(timeout(30000));
   }
 
   updateItems(menuId: number, items: MenuItem[]): Observable<any> {
-    return this.http.post(`${this.API}/${menuId}/items`, { items });
+    return this.http.post(`${this.API}/${menuId}/items`, { items }).pipe(timeout(30000));
   }
 }

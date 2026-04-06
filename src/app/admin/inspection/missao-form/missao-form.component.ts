@@ -4,6 +4,7 @@ import { ActivatedRoute, RouterModule, Router } from '@angular/router';
 import { InspectionService, Missao } from '../services/inspection.service';
 import { TeamService, Equipa } from '../services/team.service';
 import { FormsModule } from '@angular/forms';
+import { ToastService } from '../../../services/toast.service';
 
 @Component({
   selector: 'app-missao-form',
@@ -80,20 +81,27 @@ export class MissaoFormComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private inspectionService: InspectionService,
-    private teamService: TeamService
+    private teamService: TeamService,
+    private toast: ToastService
   ) {}
 
   ngOnInit() {
-    this.teamService.all().subscribe(data => this.teams = data);
+    this.teamService.all().subscribe({
+      next: data => this.teams = data,
+      error: () => this.toast.error('Erro ao carregar equipas.')
+    });
     
     const id = this.route.snapshot.paramMap.get('id');
     if (id && id !== 'new') {
       this.isEdit = true;
-      this.inspectionService.getMissao(Number(id)).subscribe(data => {
-        this.model = data;
-        // Format dates for input type="datetime-local"
-        if (this.model.data_inicio) this.model.data_inicio = this.model.data_inicio.substring(0, 16);
-        if (this.model.data_fim_prevista) this.model.data_fim_prevista = this.model.data_fim_prevista.substring(0, 16);
+      this.inspectionService.getMissao(Number(id)).subscribe({
+        next: data => {
+          this.model = data;
+          // Format dates for input type="datetime-local"
+          if (this.model.data_inicio) this.model.data_inicio = this.model.data_inicio.substring(0, 16);
+          if (this.model.data_fim_prevista) this.model.data_fim_prevista = this.model.data_fim_prevista.substring(0, 16);
+        },
+        error: () => this.toast.error('Erro ao carregar dados da missão.')
       });
     }
   }
@@ -103,8 +111,12 @@ export class MissaoFormComponent implements OnInit {
       ? this.inspectionService.updateMissao(this.model.id!, this.model)
       : this.inspectionService.createMissao(this.model);
 
-    obs.subscribe(() => {
-      this.router.navigate(['/admin/inspection/missoes']);
+    obs.subscribe({
+      next: () => {
+        this.toast.success(this.isEdit ? 'Missão atualizada' : 'Missão criada com sucesso');
+        this.router.navigate(['/admin/inspection/missoes']);
+      },
+      error: () => this.toast.error('Erro ao guardar missão. Verifique os dados.')
     });
   }
 }

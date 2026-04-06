@@ -23,34 +23,34 @@ export class AreaService {
 
   all(): Observable<AreaItem[]> {
     return this.http.get<any[]>(this.API).pipe(
-      timeout(15000),
+      timeout(30000),
       map(items => items.map(item => this.fromApi(item)))
     );
   }
 
   show(id: number): Observable<AreaItem> {
     return this.http.get<any>(`${this.API}/${id}`).pipe(
-      timeout(15000),
+      timeout(30000),
       map(item => this.fromApi(item))
     );
   }
 
   create(data: AreaItem): Observable<AreaItem> {
     return this.http.post<any>(this.API, this.toApi(data)).pipe(
-      timeout(15000),
+      timeout(30000),
       map(item => this.fromApi(item))
     );
   }
 
   update(id: number, data: AreaItem): Observable<AreaItem> {
     return this.http.put<any>(`${this.API}/${id}`, this.toApi(data)).pipe(
-      timeout(15000),
+      timeout(30000),
       map(item => this.fromApi(item))
     );
   }
 
   delete(id: number) {
-    return this.http.delete(`${this.API}/${id}`).pipe(timeout(15000));
+    return this.http.delete(`${this.API}/${id}`).pipe(timeout(30000));
   }
 
   private fromApi(item: any): AreaItem {

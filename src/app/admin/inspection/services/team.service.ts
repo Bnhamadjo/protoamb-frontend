@@ -20,30 +20,30 @@ export class TeamService {
   constructor(private http: HttpClient) {}
 
   all(): Observable<Equipa[]> {
-    return this.http.get<Equipa[]>(this.API).pipe(timeout(10000));
+    return this.http.get<Equipa[]>(this.API).pipe(timeout(30000));
   }
 
   show(id: number): Observable<Equipa> {
-    return this.http.get<Equipa>(`${this.API}/${id}`).pipe(timeout(10000));
+    return this.http.get<Equipa>(`${this.API}/${id}`).pipe(timeout(30000));
   }
 
   create(data: Partial<Equipa>): Observable<Equipa> {
-    return this.http.post<Equipa>(this.API, data).pipe(timeout(10000));
+    return this.http.post<Equipa>(this.API, data).pipe(timeout(30000));
   }
 
   update(id: number, data: Partial<Equipa>): Observable<Equipa> {
-    return this.http.put<Equipa>(`${this.API}/${id}`, data).pipe(timeout(10000));
+    return this.http.put<Equipa>(`${this.API}/${id}`, data).pipe(timeout(30000));
   }
 
   delete(id: number): Observable<any> {
-    return this.http.delete(`${this.API}/${id}`).pipe(timeout(10000));
+    return this.http.delete(`${this.API}/${id}`).pipe(timeout(30000));
   }
 
   addMember(teamId: number, userId: number, papel: string = 'tecnico'): Observable<any> {
-    return this.http.post(`${this.API}/${teamId}/members`, { user_id: userId, papel }).pipe(timeout(10000));
+    return this.http.post(`${this.API}/${teamId}/members`, { user_id: userId, papel }).pipe(timeout(30000));
   }
 
   removeMember(teamId: number, userId: number): Observable<any> {
-    return this.http.delete(`${this.API}/${teamId}/members/${userId}`).pipe(timeout(10000));
+    return this.http.delete(`${this.API}/${teamId}/members/${userId}`).pipe(timeout(30000));
   }
 }

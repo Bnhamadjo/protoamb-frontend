@@ -49,49 +49,49 @@ export class InspectionService {
 
   // OCCURRENCES
   getOcorrencias(): Observable<Ocorrencia[]> {
-    return this.http.get<Ocorrencia[]>(this.RECURSO_OCORRENCIAS).pipe(timeout(10000));
+    return this.http.get<Ocorrencia[]>(this.RECURSO_OCORRENCIAS).pipe(timeout(30000));
   }
 
   getOcorrencia(id: number): Observable<Ocorrencia> {
-    return this.http.get<Ocorrencia>(`${this.RECURSO_OCORRENCIAS}/${id}`).pipe(timeout(10000));
+    return this.http.get<Ocorrencia>(`${this.RECURSO_OCORRENCIAS}/${id}`).pipe(timeout(30000));
   }
 
   createOcorrencia(data: Partial<Ocorrencia>): Observable<Ocorrencia> {
-    return this.http.post<Ocorrencia>(this.RECURSO_OCORRENCIAS, data).pipe(timeout(10000));
+    return this.http.post<Ocorrencia>(this.RECURSO_OCORRENCIAS, data).pipe(timeout(30000));
   }
 
   updateOcorrencia(id: number, data: Partial<Ocorrencia>): Observable<Ocorrencia> {
-    return this.http.put<Ocorrencia>(`${this.RECURSO_OCORRENCIAS}/${id}`, data).pipe(timeout(10000));
+    return this.http.put<Ocorrencia>(`${this.RECURSO_OCORRENCIAS}/${id}`, data).pipe(timeout(30000));
   }
 
   deleteOcorrencia(id: number): Observable<any> {
-    return this.http.delete(`${this.RECURSO_OCORRENCIAS}/${id}`).pipe(timeout(10000));
+    return this.http.delete(`${this.RECURSO_OCORRENCIAS}/${id}`).pipe(timeout(30000));
   }
 
   // MISSIONS
   getMissoes(): Observable<Missao[]> {
-    return this.http.get<Missao[]>(this.RECURSO_MISSOES).pipe(timeout(10000));
+    return this.http.get<Missao[]>(this.RECURSO_MISSOES).pipe(timeout(30000));
   }
 
   getMissao(id: number): Observable<Missao> {
-    return this.http.get<Missao>(`${this.RECURSO_MISSOES}/${id}`).pipe(timeout(10000));
+    return this.http.get<Missao>(`${this.RECURSO_MISSOES}/${id}`).pipe(timeout(30000));
   }
 
   createMissao(data: Partial<Missao>): Observable<Missao> {
-    return this.http.post<Missao>(this.RECURSO_MISSOES, data).pipe(timeout(10000));
+    return this.http.post<Missao>(this.RECURSO_MISSOES, data).pipe(timeout(30000));
   }
 
   updateMissao(id: number, data: Partial<Missao>): Observable<Missao> {
-    return this.http.put<Missao>(`${this.RECURSO_MISSOES}/${id}`, data).pipe(timeout(10000));
+    return this.http.put<Missao>(`${this.RECURSO_MISSOES}/${id}`, data).pipe(timeout(30000));
   }
 
   // EVIDENCES
   addEvidencia(data: any): Observable<any> {
-    return this.http.post(this.RECURSO_EVIDENCIAS, data).pipe(timeout(10000));
+    return this.http.post(this.RECURSO_EVIDENCIAS, data).pipe(timeout(30000));
   }
 
   // MONITORING
   addAcompanhamento(data: any): Observable<any> {
-    return this.http.post(this.RECURSO_ACOMPANHAMENTOS, data).pipe(timeout(10000));
+    return this.http.post(this.RECURSO_ACOMPANHAMENTOS, data).pipe(timeout(30000));
   }
 }

@@ -22,7 +22,7 @@ import { DepartmentItem, GalleryItem, HomeActionCard, PlatformModuleItem, Settin
             <p class="subtitle">{{ slide.subtitle }}</p>
             <div class="slider-actions">
               <a routerLink="/denunciar" class="btn primary lg">Denunciar Irregularidade</a>
-              <a routerLink="/pages/sobre-nos" class="btn outline lg white">Conheça o Ministério</a>
+              <a routerLink="/pages/quem-somos" class="btn outline lg white">Conheça o Ministério</a>
             </div>
           </div>
         </div>
@@ -171,11 +171,11 @@ import { DepartmentItem, GalleryItem, HomeActionCard, PlatformModuleItem, Settin
               <div class="card-img-box">
                  <img [src]="post.featured_image || fallbackPostImage" class="card-img" alt="Post">
               </div>
-              <div class="card-content p-8">
-                <span class="badge sm mb-4">{{ post.category_name || 'Notícias' }}</span>
-                <h4 class="text-xl mb-3">{{ post.title }}</h4>
-                <p class="muted text-sm line-clamp-2">{{ post.excerpt }}</p>
-                <div class="btn-link text-brand font-bold mt-4 inline-block">Ler Relatório -></div>
+              <div class="card-content p-6">
+                <span class="badge sm mb-3">{{ post.category_name || 'Notícias' }}</span>
+                <h4 class="text-lg font-black mb-2">{{ post.title }}</h4>
+                <!-- Excerpt removed to keep cards compact and aesthetic -->
+                <div class="btn-link text-brand font-bold text-xs mt-2 inline-block">Ler Relatório -></div>
               </div>
             </div>
           </div>
@@ -289,6 +289,10 @@ import { DepartmentItem, GalleryItem, HomeActionCard, PlatformModuleItem, Settin
       display: flex;
       flex-direction: column;
       justify-content: flex-end;
+      align-items: center;
+      text-align: center;
+      padding: 24px;
+      gap: 6px;
       isolation: isolate;
     }
     .action-card::before {
@@ -324,8 +328,8 @@ import { DepartmentItem, GalleryItem, HomeActionCard, PlatformModuleItem, Settin
     .section-headline { display: flex; justify-content: space-between; gap: 18px; align-items: flex-end; margin-bottom: 28px; }
     .solutions-section, .departments-section { margin: 100px auto; }
     .solutions-grid, .departments-grid { align-items: stretch; }
-    .solution-card, .department-card { height: 100%; border-radius: 24px; }
-    .solution-meta { display: flex; justify-content: space-between; gap: 12px; align-items: center; margin-bottom: 16px; }
+    .solution-card, .department-card { height: 100%; border-radius: 24px; text-align: center; display: flex; flex-direction: column; }
+    .solution-meta { display: flex; justify-content: center; gap: 12px; align-items: center; margin-bottom: 16px; flex-wrap: wrap; }
     .status-pill {
       display: inline-flex;
       align-items: center;
@@ -374,29 +378,59 @@ import { DepartmentItem, GalleryItem, HomeActionCard, PlatformModuleItem, Settin
       z-index: 5;
       pointer-events: none;
     }
-    .marquee-wrapper::before { left: 0; background: linear-gradient(to right, var(--bg-alt) 0%, transparent 100%); }
-    .marquee-wrapper::after { right: 0; background: linear-gradient(to left, var(--bg-alt) 0%, transparent 100%); }
+    .marquee-wrapper::before { left: 0; background: linear-gradient(to right, #F1F4F2 0%, transparent 100%); }
+    .marquee-wrapper::after { right: 0; background: linear-gradient(to left, #F1F4F2 0%, transparent 100%); }
     
     .marquee-content {
       display: flex;
-      gap: 30px;
+      gap: 32px;
       width: max-content;
-      animation: scrollMarquee 40s linear infinite;
-      padding: 0 15px;
+      animation: scrollMarquee 50s linear infinite;
+      padding: 20px 15px;
     }
     .marquee-wrapper:hover .marquee-content {
       animation-play-state: paused;
     }
     .impeccable-card.fixed-width {
-      width: 360px;
+      width: 310px;
       flex-shrink: 0;
-      border-radius: 20px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.06);
-      transition: transform 0.3s;
+      border-radius: 24px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+      border: 1.5px solid rgba(0,0,0,0.03);
+      background: #fff;
+      transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.5s ease;
+      overflow: hidden;
     }
     .impeccable-card.fixed-width:hover {
-      transform: translateY(-8px);
-      box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+      transform: translateY(-12px);
+      box-shadow: 0 25px 50px rgba(0,0,0,0.12);
+      border-color: var(--primary);
+    }
+
+    .card-img-box {
+      width: 100%;
+      aspect-ratio: 16 / 10;
+      overflow: hidden;
+      position: relative;
+    }
+    .card-img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .impeccable-card:hover .card-img { transform: scale(1.1); }
+    
+    .card-content { padding: 24px 28px !important; }
+    .card-content h4 { line-height: 1.25; font-weight: 800; color: var(--brand); height: 44px; overflow: hidden; margin: 0; }
+
+    .badge.sm {
+      background: rgba(var(--primary-rgb), 0.1);
+      backdrop-filter: blur(4px);
+      color: var(--primary);
+      border: 1px solid rgba(var(--primary-rgb), 0.15);
+      padding: 4px 12px;
+      border-radius: 8px;
+      font-size: 0.68rem;
     }
     
     @keyframes scrollMarquee {
@@ -491,10 +525,10 @@ export class PublicHomeComponent implements OnInit, OnDestroy {
   posts: any[] = [];
   slider: any[] = [];
   actionCards: HomeActionCard[] = [
-    { icon: '🛡️', title: 'Inspeção e Controlo', subtitle: 'Ministério do Ambiente', link: '/ocorrencias', image: '/assets/bg-1.jpg' },
-    { icon: '📢', title: 'Cidadania Ativa', subtitle: 'Denúncias e Sugestões', link: '/denunciar', image: '/assets/bg-2.jpg' },
-    { icon: '🌳', title: 'Biodiversidade', subtitle: 'Áreas de preservação', link: '/biodiversidade', image: '/assets/bg-3.jpg' },
-    { icon: '📜', title: 'Legislação', subtitle: 'Base legal do país', link: '/biblioteca-legal', image: '/assets/bg-4.jpg' }
+    { icon: '🛡️', title: 'Inspeção e Controlo', subtitle: 'Ministério do Ambiente', link: '/ocorrencias', image: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=800&q=80' },
+    { icon: '📢', title: 'Cidadania Ativa', subtitle: 'Denúncias e Sugestões', link: '/denunciar', image: 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=800&q=80' },
+    { icon: '🌳', title: 'Biodiversidade', subtitle: 'Áreas de preservação', link: '/biodiversidade', image: 'https://images.unsplash.com/photo-1502082553048-f009c37129b9?auto=format&fit=crop&w=800&q=80' },
+    { icon: '📜', title: 'Legislação', subtitle: 'Base legal do país', link: '/biblioteca-legal', image: 'https://images.unsplash.com/photo-1505664194779-8beaceb93744?auto=format&fit=crop&w=800&q=80' }
   ];
   homeGallery: GalleryItem[] = [];
   selectedGalleryImage: GalleryItem | null = null;
@@ -502,7 +536,7 @@ export class PublicHomeComponent implements OnInit, OnDestroy {
     title: 'Sobre o MINISTERIO',
     text: 'MINISTERIO do Ambiente e Biodiversidade tem como missao a promocao do desenvolvimento sustentavel atraves da preservacao, protecao e conservacao do ambiente e da biodiversidade na Guine-Bissau.',
     buttonText: 'Ver Missao e Visao',
-    buttonLink: '/pages/sobre-nos',
+    buttonLink: '/pages/quem-somos',
     image: ''
   };
   platformProfile = {

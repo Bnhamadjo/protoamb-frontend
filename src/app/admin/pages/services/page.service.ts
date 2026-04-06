@@ -25,22 +25,22 @@ export class PageService {
   constructor(private http: HttpClient) {}
 
   all(): Observable<Page[]> {
-    return this.http.get<Page[]>(this.API).pipe(timeout(15000));
+    return this.http.get<Page[]>(this.API).pipe(timeout(30000));
   }
 
   show(slug: string): Observable<Page> {
-    return this.http.get<Page>(`${this.API}/${slug}`).pipe(timeout(15000));
+    return this.http.get<Page>(`${this.API}/${slug}`).pipe(timeout(30000));
   }
 
   create(data: Page): Observable<Page> {
-    return this.http.post<Page>(this.API, data).pipe(timeout(15000));
+    return this.http.post<Page>(this.API, data).pipe(timeout(30000));
   }
 
   update(id: number, data: Page): Observable<Page> {
-    return this.http.put<Page>(`${this.API}/${id}`, data).pipe(timeout(15000));
+    return this.http.put<Page>(`${this.API}/${id}`, data).pipe(timeout(30000));
   }
 
   delete(id: number) {
-    return this.http.delete(`${this.API}/${id}`).pipe(timeout(15000));
+    return this.http.delete(`${this.API}/${id}`).pipe(timeout(30000));
   }
 }

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule, Router } from '@angular/router';
 import { TeamService, Equipa } from '../services/team.service';
 import { FormsModule } from '@angular/forms';
+import { ToastService } from '../../../services/toast.service';
 
 @Component({
   selector: 'app-team-detail',
@@ -101,7 +102,8 @@ export class TeamDetailComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private teamService: TeamService
+    private teamService: TeamService,
+    private toast: ToastService
   ) {}
 
   ngOnInit() {
@@ -112,31 +114,46 @@ export class TeamDetailComponent implements OnInit {
   }
 
   loadTeam(id: number) {
-    this.teamService.show(id).subscribe((data: Equipa) => {
-      this.team = data;
+    this.teamService.show(id).subscribe({
+      next: (data: Equipa) => {
+        this.team = data;
+      },
+      error: () => this.toast.error('Erro ao carregar equipa.')
     });
   }
 
   addMember() {
     if (!this.newMemberId) return;
-    this.teamService.addMember(this.team!.id!, this.newMemberId, this.newMemberRole).subscribe(() => {
-      this.loadTeam(this.team!.id!);
-      this.newMemberId = undefined;
+    this.teamService.addMember(this.team!.id!, this.newMemberId, this.newMemberRole).subscribe({
+      next: () => {
+        this.loadTeam(this.team!.id!);
+        this.newMemberId = undefined;
+        this.toast.success('Membro adicionado');
+      },
+      error: () => this.toast.error('Erro ao adicionar membro. Verifique o ID.')
     });
   }
 
   removeMember(userId: number) {
     if (confirm('Deseja remover este membro da equipa?')) {
-      this.teamService.removeMember(this.team!.id!, userId).subscribe(() => {
-        this.loadTeam(this.team!.id!);
+      this.teamService.removeMember(this.team!.id!, userId).subscribe({
+        next: () => {
+          this.loadTeam(this.team!.id!);
+          this.toast.success('Membro removido');
+        },
+        error: () => this.toast.error('Erro ao remover membro.')
       });
     }
   }
 
   deleteTeam() {
     if (confirm('Tem a certeza que deseja eliminar esta equipa?')) {
-      this.teamService.delete(this.team!.id!).subscribe(() => {
-        this.router.navigate(['/admin/inspection/teams']);
+      this.teamService.delete(this.team!.id!).subscribe({
+        next: () => {
+          this.toast.success('Equipa eliminada');
+          this.router.navigate(['/admin/inspection/teams']);
+        },
+        error: () => this.toast.error('Erro ao eliminar equipa.')
       });
     }
   }

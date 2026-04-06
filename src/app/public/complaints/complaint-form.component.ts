@@ -112,7 +112,7 @@ export class PublicComplaintFormComponent {
       },
       error: () => {
         this.submitting = false;
-        alert('Erro ao enviar a denúncia. Por favor tente mais tarde.');
+        this.toast.error('Erro ao enviar a denúncia. Por favor tente mais tarde.');
       }
     });
   }

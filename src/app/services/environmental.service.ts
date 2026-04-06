@@ -10,6 +10,8 @@ export interface EnvironmentalMetric {
   value: number;
   unit: string;
   location?: string;
+  latitude?: number;
+  longitude?: number;
   sensor_id?: string;
   status: 'normal' | 'warning' | 'critical';
   recorded_at: string;

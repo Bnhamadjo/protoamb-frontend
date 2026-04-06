@@ -25,14 +25,14 @@ export class ComplaintService {
 
   all(): Observable<Complaint[]> {
     return this.http.get<any[]>(this.API).pipe(
-      timeout(15000),
+      timeout(30000),
       map(items => items.map(item => this.fromApi(item)))
     );
   }
 
   show(id: number): Observable<Complaint> {
     return this.http.get<any>(`${this.API}/${id}`).pipe(
-      timeout(15000),
+      timeout(30000),
       map(item => this.fromApi(item))
     );
   }
@@ -41,13 +41,13 @@ export class ComplaintService {
     return this.http.put<any>(`${this.API}/${id}`, {
       status: this.toApiStatus(status)
     }).pipe(
-      timeout(15000),
+      timeout(30000),
       map(item => this.fromApi(item))
     );
   }
 
   delete(id: number) {
-    return this.http.delete(`${this.API}/${id}`).pipe(timeout(15000));
+    return this.http.delete(`${this.API}/${id}`).pipe(timeout(30000));
   }
 
   private fromApi(item: any): Complaint {

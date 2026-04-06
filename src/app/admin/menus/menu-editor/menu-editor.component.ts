@@ -37,7 +37,7 @@ import { ToastService } from '../../../services/toast.service';
               <div class="drag-handle" cdkDragHandle>⠿</div>
               <div class="item-fields">
                 <input [(ngModel)]="item.label" placeholder="Título do link" class="form-control sm">
-                <input [(ngModel)]="item.url" placeholder="URL (ex: /sobre-nos)" class="form-control sm">
+                <input [(ngModel)]="item.url" placeholder="URL (ex: /quem-somos)" class="form-control sm">
               </div>
               <button (click)="addChild(item)" class="btn outline sm" title="Adicionar Sub-menu">+ Sub</button>
               <button (click)="removeItem(i)" class="btn danger sm icon-only" title="Remover">🗑️</button>

@@ -4,6 +4,7 @@ import { ActivatedRoute, RouterModule, Router } from '@angular/router';
 import { InspectionService, Ocorrencia } from '../services/inspection.service';
 import { TeamService, Equipa } from '../services/team.service';
 import { FormsModule } from '@angular/forms';
+import { ToastService } from '../../../services/toast.service';
 
 @Component({
   selector: 'app-ocorrencia-form',
@@ -68,6 +69,38 @@ import { FormsModule } from '@angular/forms';
               <input type="text" name="localizacao" [(ngModel)]="model.localizacao" 
                      placeholder="Ex: Província Sul, Setor de Buba">
             </div>
+
+            <!-- SIG Integration: Latitude & Longitude -->
+            <div class="form-group">
+              <label>Latitude (Coordenada SIG)</label>
+              <input type="number" step="any" name="latitude" [(ngModel)]="model.latitude" 
+                     placeholder="Ex: 11.8632">
+            </div>
+
+            <div class="form-group">
+              <label>Longitude (Coordenada SIG)</label>
+              <input type="number" step="any" name="longitude" [(ngModel)]="model.longitude" 
+                     placeholder="Ex: -15.5844">
+            </div>
+          </div>
+
+          <!-- Evidence Section (Satellite & Photos) -->
+          <div class="form-separator"></div>
+          <div class="evidence-section mt-8">
+            <h3 class="section-title">🖼️ Evidências e Imagens de Satélite</h3>
+            <p class="subtitle muted text-sm mb-4">Anexe fotografias de campo ou capturas de ecrã de satélite (Sentinel/NASA) para fundamentar a ocorrência.</p>
+            
+            <div class="evidence-grid grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+              <div *ngFor="let ev of model.evidencias" class="evidence-thumb-card glass-card">
+                <img [src]="ev.arquivo_path" class="w-full h-24 object-cover rounded-lg">
+                <div class="text-xs mt-2 truncate">{{ ev.tipo | uppercase }}</div>
+              </div>
+              <div class="upload-placeholder glass-card flex flex-col items-center justify-center p-4 border-dashed border-2 cursor-pointer hover:bg-black/5" (click)="triggerUpload()">
+                <span class="text-2xl">➕</span>
+                <span class="text-xs mt-1">Adicionar Imagem</span>
+                <input type="file" #fileInput class="hidden" (change)="handleUpload($event)">
+              </div>
+            </div>
           </div>
 
           <div class="form-actions mt-10">
@@ -93,6 +126,13 @@ import { FormsModule } from '@angular/forms';
 
     .form-group label { display: block; font-weight: 800; font-size: 0.85rem; color: var(--brand); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
     
+    .form-separator { height: 1px; background: var(--border); margin: 40px 0; }
+    .section-title { font-size: 1.1rem; color: var(--brand); margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
+    
+    .evidence-thumb-card { padding: 8px; border-radius: 12px; }
+    .upload-placeholder { min-height: 120px; border-radius: 12px; transition: var(--transition); border: 2px dashed rgba(6, 38, 29, 0.2); }
+    .upload-placeholder:hover { border-color: var(--brand); background: rgba(6, 38, 29, 0.05); }
+
     .form-actions { display: flex; justify-content: flex-end; padding-top: 30px; border-top: 1px solid var(--border); }
     
     @media (max-width: 768px) { .form-grid { grid-template-columns: 1fr; } .full-width { grid-column: auto; } }
@@ -110,17 +150,22 @@ export class OcorrenciaFormComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private inspectionService: InspectionService,
-    private teamService: TeamService
+    private teamService: TeamService,
+    private toast: ToastService
   ) {}
 
   ngOnInit() {
-    this.teamService.all().subscribe(data => this.teams = data);
+    this.teamService.all().subscribe({
+      next: data => this.teams = data,
+      error: () => this.toast.error('Erro ao carregar equipas.')
+    });
     
     const id = this.route.snapshot.paramMap.get('id');
     if (id && id !== 'new') {
       this.isEdit = true;
-      this.inspectionService.getOcorrencia(Number(id)).subscribe(data => {
-        this.model = data;
+      this.inspectionService.getOcorrencia(Number(id)).subscribe({
+        next: data => this.model = data,
+        error: () => this.toast.error('Erro ao carregar dados da ocorrência.')
       });
     }
   }
@@ -130,8 +175,40 @@ export class OcorrenciaFormComponent implements OnInit {
       ? this.inspectionService.updateOcorrencia(this.model.id!, this.model)
       : this.inspectionService.createOcorrencia(this.model);
 
-    obs.subscribe(() => {
-      this.router.navigate(['/admin/inspection/ocorrencias']);
+    obs.subscribe({
+      next: () => {
+        this.toast.success(this.isEdit ? 'Ocorrência atualizada' : 'Ocorrência registada com sucesso');
+        this.router.navigate(['/admin/inspection/ocorrencias']);
+      },
+      error: (err) => {
+        console.error(err);
+        this.toast.error('Erro ao guardar ocorrência. Verifique os dados e tente novamente.');
+      }
     });
+  }
+
+  triggerUpload() {
+    const el = document.querySelector('input[type="file"]') as HTMLInputElement;
+    el?.click();
+  }
+
+  handleUpload(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      // Simulate real upload or notify user
+      this.inspectionService.addEvidencia({
+        ocorrencia_id: this.model.id,
+        tipo: 'imagem',
+        arquivo_path: 'https://via.placeholder.com/800x600.png?text=Imagem+Satélite+Verificada', // Mock for now
+        descricao: 'Imagem anexada via formulário de monitoramento'
+      }).subscribe({
+        next: ev => {
+          if (!this.model.evidencias) this.model.evidencias = [];
+          this.model.evidencias.push(ev);
+          this.toast.success('Evidência anexada');
+        },
+        error: () => this.toast.error('Erro ao anexar evidência.')
+      });
+    }
   }
 }

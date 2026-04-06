@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule, Router } from '@angular/router';
 import { TeamService, Equipa } from '../services/team.service';
 import { FormsModule } from '@angular/forms';
+import { ToastService } from '../../../services/toast.service';
 
 @Component({
   selector: 'app-team-form',
@@ -57,15 +58,17 @@ export class TeamFormComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private teamService: TeamService
+    private teamService: TeamService,
+    private toast: ToastService
   ) {}
 
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
     if (id && id !== 'new') {
       this.isEdit = true;
-      this.teamService.show(Number(id)).subscribe(data => {
-        this.model = data;
+      this.teamService.show(Number(id)).subscribe({
+        next: data => this.model = data,
+        error: () => this.toast.error('Erro ao carregar dados da equipa.')
       });
     }
   }
@@ -75,8 +78,12 @@ export class TeamFormComponent implements OnInit {
       ? this.teamService.update(this.model.id!, this.model)
       : this.teamService.create(this.model);
 
-    obs.subscribe(() => {
-      this.router.navigate(['/admin/inspection/teams']);
+    obs.subscribe({
+      next: () => {
+        this.toast.success(this.isEdit ? 'Equipa atualizada' : 'Equipa criada com sucesso');
+        this.router.navigate(['/admin/inspection/teams']);
+      },
+      error: () => this.toast.error('Erro ao guardar equipa. Verifique os dados.')
     });
   }
 }

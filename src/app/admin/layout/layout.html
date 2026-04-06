@@ -1,10 +1,10 @@
 <div class="admin-wrapper" [class.sidebar-open]="sidebarOpen">
   <div class="sidebar-overlay" (click)="toggleSidebar()"></div>
-  
+
   <aside class="sidebar" [class.open]="sidebarOpen">
     <div class="sidebar-header">
       <div class="logo-box">
-        <img [src]="logoAdmin" alt="Logo" class="sidebar-logo" onerror="this.src='https://mab.gov.gw/img/logo.png'">
+        <img [src]="logoAdmin" alt="Logo" class="sidebar-logo" onerror="this.onerror=null; this.src='/logo.png'">
       </div>
       <div class="sidebar-title">
         <h3>Plataforma <span class="text-accent">MAB</span></h3>
@@ -20,15 +20,16 @@
     </div>
 
     <nav class="menu custom-scrollbar">
-      
+
       <div class="menu-label">Principal</div>
-      <a routerLink="/admin/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}" (click)="sidebarOpen = false">
+      <a routerLink="/admin/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}"
+        (click)="sidebarOpen = false">
         <span class="icon">📊</span>
         <div class="menu-text"><span>Dashboard</span> Visão Global</div>
       </a>
 
       <div class="menu-label">Sistemas SIRE & Operações</div>
-      
+
       <!-- Resíduos Group -->
       <div *ngIf="auth.hasRole(['admin', 'tecnico', 'auditor'])" class="menu-group" [class.open]="true">
         <a routerLink="/admin/waste" routerLinkActive="active" class="group-parent" (click)="sidebarOpen = false">
@@ -52,76 +53,99 @@
           <div class="menu-text"><span>Qualidade</span> Monitorização</div>
         </a>
         <div class="sub-menu">
-          <a *ngIf="auth.hasRole(['admin', 'tecnico'])" routerLink="/admin/quality/new" routerLinkActive="sub-active" (click)="sidebarOpen = false">
+          <a *ngIf="auth.hasRole(['admin', 'tecnico'])" routerLink="/admin/quality/new" routerLinkActive="sub-active"
+            (click)="sidebarOpen = false">
             <span class="dot"></span> Novo Registo
           </a>
         </div>
       </div>
 
+      <div class="menu-label">Inteligência de Dados</div>
+      <a *ngIf="auth.hasRole(['admin', 'tecnico', 'auditor'])" routerLink="/admin/explorer" routerLinkActive="active"
+        (click)="sidebarOpen = false">
+        <span class="icon">🪄</span>
+        <div class="menu-text"><span>Explorador</span> Minerador MAB</div>
+      </a>
+
       <div class="menu-label">Conteúdo Institucional</div>
-      <a *ngIf="auth.hasRole(['admin', 'tecnico'])" routerLink="/admin/pages" routerLinkActive="active" (click)="sidebarOpen = false">
+      <a *ngIf="auth.hasRole(['admin', 'tecnico'])" routerLink="/admin/pages" routerLinkActive="active"
+        (click)="sidebarOpen = false">
         <span class="icon">📄</span>
         <div class="menu-text"><span>Páginas</span> Institucional</div>
       </a>
-      <a *ngIf="auth.hasRole(['admin', 'tecnico'])" routerLink="/admin/posts" routerLinkActive="active" (click)="sidebarOpen = false">
+      <a *ngIf="auth.hasRole(['admin', 'tecnico'])" routerLink="/admin/posts" routerLinkActive="active"
+        (click)="sidebarOpen = false">
         <span class="icon">✍️</span>
         <div class="menu-text"><span>Posts</span> Notícias</div>
       </a>
-      <a *ngIf="auth.hasRole(['admin', 'tecnico', 'auditor'])" routerLink="/admin/biodiversity" routerLinkActive="active" (click)="sidebarOpen = false">
+      <a *ngIf="auth.hasRole(['admin', 'tecnico', 'auditor'])" routerLink="/admin/biodiversity"
+        routerLinkActive="active" (click)="sidebarOpen = false">
         <span class="icon">🦋</span>
         <div class="menu-text"><span>Biodiv</span> Fauna & Flora</div>
       </a>
-      <a *ngIf="auth.hasRole(['admin', 'tecnico', 'auditor'])" routerLink="/admin/areas" routerLinkActive="active" (click)="sidebarOpen = false">
+      <a *ngIf="auth.hasRole(['admin', 'tecnico', 'auditor'])" routerLink="/admin/areas" routerLinkActive="active"
+        (click)="sidebarOpen = false">
         <span class="icon">🗺️</span>
         <div class="menu-text"><span>Áreas</span> Protegidas</div>
       </a>
 
       <div class="menu-label">Relações Internacionais</div>
-      <a *ngIf="auth.hasRole(['admin', 'tecnico', 'auditor'])" routerLink="/admin/partners" routerLinkActive="active" (click)="sidebarOpen = false">
+      <a *ngIf="auth.hasRole(['admin', 'tecnico', 'auditor'])" routerLink="/admin/partners" routerLinkActive="active"
+        (click)="sidebarOpen = false">
         <span class="icon">🤝</span>
         <div class="menu-text"><span>Parceiros</span> Estaduais</div>
       </a>
-      <a *ngIf="auth.hasRole(['admin', 'tecnico', 'auditor'])" routerLink="/admin/conventions" routerLinkActive="active" (click)="sidebarOpen = false">
+      <a *ngIf="auth.hasRole(['admin', 'tecnico', 'auditor'])" routerLink="/admin/conventions" routerLinkActive="active"
+        (click)="sidebarOpen = false">
         <span class="icon">📜</span>
         <div class="menu-text"><span>Tratados</span> Convenções</div>
       </a>
 
       <div class="menu-label">Fiscalização & Denúncias</div>
-      <a *ngIf="auth.hasRole(['admin', 'tecnico', 'auditor'])" routerLink="/admin/complaints" routerLinkActive="active" (click)="sidebarOpen = false">
+      <a *ngIf="auth.hasRole(['admin', 'tecnico', 'auditor'])" routerLink="/admin/complaints" routerLinkActive="active"
+        (click)="sidebarOpen = false">
         <span class="icon">🚨</span>
         <div class="menu-text"><span>Denúncias</span> Linha MAB</div>
       </a>
-      <a *ngIf="auth.hasRole(['admin', 'tecnico'])" routerLink="/admin/inspection/ocorrencias" routerLinkActive="active" (click)="sidebarOpen = false">
+      <a *ngIf="auth.hasRole(['admin', 'tecnico'])" routerLink="/admin/inspection/ocorrencias" routerLinkActive="active"
+        (click)="sidebarOpen = false">
         <span class="icon">🔍</span>
         <div class="menu-text"><span>Ocorr</span> Inspeções</div>
       </a>
-      <a *ngIf="auth.hasRole(['admin', 'tecnico'])" routerLink="/admin/inspection/missoes" routerLinkActive="active" (click)="sidebarOpen = false">
+      <a *ngIf="auth.hasRole(['admin', 'tecnico'])" routerLink="/admin/inspection/missoes" routerLinkActive="active"
+        (click)="sidebarOpen = false">
         <span class="icon">🏗️</span>
         <div class="menu-text"><span>Missões</span> Campo</div>
       </a>
 
       <div class="menu-label">Configuração</div>
-      <a *ngIf="auth.hasRole(['admin'])" routerLink="/admin/menus" routerLinkActive="active" (click)="sidebarOpen = false">
+      <a *ngIf="auth.hasRole(['admin'])" routerLink="/admin/menus" routerLinkActive="active"
+        (click)="sidebarOpen = false">
         <span class="icon">🔗</span>
         <div class="menu-text"><span>Menus</span> Navegação</div>
       </a>
-      <a *ngIf="auth.hasRole(['admin', 'tecnico'])" routerLink="/admin/media" routerLinkActive="active" (click)="sidebarOpen = false">
+      <a *ngIf="auth.hasRole(['admin', 'tecnico'])" routerLink="/admin/media" routerLinkActive="active"
+        (click)="sidebarOpen = false">
         <span class="icon">📁</span>
         <div class="menu-text"><span>Media</span> Biblioteca</div>
       </a>
-      <a *ngIf="auth.hasRole(['admin'])" routerLink="/admin/users" routerLinkActive="active" (click)="sidebarOpen = false">
+      <a *ngIf="auth.hasRole(['admin'])" routerLink="/admin/users" routerLinkActive="active"
+        (click)="sidebarOpen = false">
         <span class="icon">👥</span>
         <div class="menu-text"><span>Utilizadores</span> Gestão Acessos</div>
       </a>
-      <a *ngIf="auth.hasRole(['admin'])" routerLink="/admin/integrations" routerLinkActive="active" (click)="sidebarOpen = false">
+      <a *ngIf="auth.hasRole(['admin'])" routerLink="/admin/integrations" routerLinkActive="active"
+        (click)="sidebarOpen = false">
         <span class="icon">🔌</span>
         <div class="menu-text"><span>Integrações</span> API Externa</div>
       </a>
-      <a *ngIf="auth.hasRole(['admin', 'tecnico'])" routerLink="/admin/chemicals" routerLinkActive="active" (click)="sidebarOpen = false">
+      <a *ngIf="auth.hasRole(['admin', 'tecnico'])" routerLink="/admin/chemicals" routerLinkActive="active"
+        (click)="sidebarOpen = false">
         <span class="icon">🧪</span>
         <div class="menu-text"><span>Químicos</span> Inventário</div>
       </a>
-      <a *ngIf="auth.hasRole(['admin'])" routerLink="/admin/settings" routerLinkActive="active" (click)="sidebarOpen = false">
+      <a *ngIf="auth.hasRole(['admin'])" routerLink="/admin/settings" routerLinkActive="active"
+        (click)="sidebarOpen = false">
         <span class="icon">⚙️</span>
         <div class="menu-text"><span>Definições</span> Plataforma</div>
       </a>
@@ -131,7 +155,7 @@
       <div class="location">
         <span>📍</span> Guiné-Bissau
       </div>
-      <div class="copyright">© 2026 Ministério do Ambiente</div>
+      <div class="copyright">© 2026 Ministério do Ambiente e Ação Climática</div>
     </div>
   </aside>
 
@@ -151,9 +175,9 @@
       </div>
       <div class="top-actions">
         <div class="user-info hide-mobile" *ngIf="auth.getUser() as user">
-          <div class="avatar">{{ user.name.substring(0,2).toUpperCase() }}</div>
+
           <div class="details">
-            <span class="name">{{ user.name }}</span>
+
             <span class="role">{{ user.role | titlecase }} MAB</span>
           </div>
         </div>

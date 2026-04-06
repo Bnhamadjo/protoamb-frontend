@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { DepartmentItem, PlatformModuleItem, SettingsService } from '../../services/settings.service';
 import { SeoService } from '../../services/seo.service';
+import { AuthService } from '../../core/auth';
 
 @Component({
   standalone: true,
@@ -23,7 +24,9 @@ import { SeoService } from '../../services/seo.service';
           <div class="panel-icon">🏛️</div>
           <h3>Preparado para crescer</h3>
           <p>Uma mesma base tecnológica integrada para atender ambiente, agricultura, ordenamento, recursos hídricos e proteção do Estado.</p>
-          <a routerLink="/admin/settings" class="btn primary lg" style="width: 100%; justify-content: center; margin-top: 10px;">Configurar plataforma</a>
+          <a routerLink="/admin/settings" class="btn primary lg" style="width: 100%; justify-content: center; margin-top: 10px;">
+            {{ auth.isLogged() ? 'Painel de Configuração' : 'Configurar plataforma' }}
+          </a>
         </div>
       </div>
       
@@ -186,7 +189,8 @@ export class PublicSolutionsComponent implements OnInit {
 
   constructor(
     private settingsService: SettingsService,
-    private seo: SeoService
+    private seo: SeoService,
+    public auth: AuthService
   ) {}
 
   ngOnInit(): void {

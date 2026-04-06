@@ -20,22 +20,22 @@ export class BiodiversityService {
   constructor(private http: HttpClient) {}
 
   all(): Observable<BiodiversityItem[]> {
-    return this.http.get<BiodiversityItem[]>(this.API).pipe(timeout(15000));
+    return this.http.get<BiodiversityItem[]>(this.API).pipe(timeout(30000));
   }
 
   show(id: number): Observable<BiodiversityItem> {
-    return this.http.get<BiodiversityItem>(`${this.API}/${id}`).pipe(timeout(15000));
+    return this.http.get<BiodiversityItem>(`${this.API}/${id}`).pipe(timeout(30000));
   }
 
   create(data: BiodiversityItem): Observable<BiodiversityItem> {
-    return this.http.post<BiodiversityItem>(this.API, data).pipe(timeout(15000));
+    return this.http.post<BiodiversityItem>(this.API, data).pipe(timeout(30000));
   }
 
   update(id: number, data: BiodiversityItem): Observable<BiodiversityItem> {
-    return this.http.put<BiodiversityItem>(`${this.API}/${id}`, data).pipe(timeout(15000));
+    return this.http.put<BiodiversityItem>(`${this.API}/${id}`, data).pipe(timeout(30000));
   }
 
   delete(id: number) {
-    return this.http.delete(`${this.API}/${id}`).pipe(timeout(15000));
+    return this.http.delete(`${this.API}/${id}`).pipe(timeout(30000));
   }
 }

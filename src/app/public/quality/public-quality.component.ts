@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { EnvironmentalService, EnvironmentalMetric, QualityStats } from '../../services/environmental.service';
+import * as L from 'leaflet';
 
 @Component({
   standalone: true,
@@ -21,14 +22,14 @@ import { EnvironmentalService, EnvironmentalMetric, QualityStats } from '../../s
               <span class="text-[10px] font-black uppercase tracking-[3px] text-white/80">Dados em Tempo Real</span>
             </div>
             
-            <h1 class="text-6xl md:text-8xl font-black text-white leading-[1.1] mb-8 drop-shadow-2xl">
+            <h1 class="hero-title text-6xl md:text-8xl mb-8">
               Monitorização <br>
-              <span class="text-emerald-400 drop-shadow-[0_0_30px_rgba(52,211,153,0.3)]">Qualidade Ambiental</span>
+              <span class="text-accent">Qualidade Ambiental</span>
             </h1>
             
-            <p class="text-xl md:text-2xl text-white/95 max-w-2xl leading-relaxed font-semibold drop-shadow-lg">
-              Transparência e dados precisos sobre o ecossistema da <span class="text-white border-b-4 border-emerald-500/50">Guiné-Bissau</span>. 
-              Acompanhe a saúde do nosso ar, água e solo.
+            <p class="hero-subtitle max-w-2xl mx-auto md:mx-0">
+              Transparência e dados precisos sobre a saúde do ecossistema da <span class="text-white border-b-4 border-accent/40">Guiné-Bissau</span>. 
+              Acompanhe o estado do nosso ar, água e solo.
             </p>
           </div>
 
@@ -55,9 +56,33 @@ import { EnvironmentalService, EnvironmentalMetric, QualityStats } from '../../s
         </div>
       </section>
 
-      <!-- Main Dashboard -->
+      <!-- Interactive Monitoring Map (Public SIG) -->
+      <section class="map-section px-6 mb-12">
+        <div class="impeccable-card glass-card p-0 overflow-hidden relative">
+          <div class="map-overlay-info absolute top-6 left-6 z-[1000] pointer-events-none">
+            <div class="glass-pill px-6 py-3 border border-white/20 rounded-2xl shadow-2xl backdrop-blur-xl">
+              <h2 class="text-white font-black text-lg">Mapa de Monitoramento Geográfico</h2>
+              <p class="text-white/60 text-xs font-bold uppercase tracking-widest">Sensores e Estações em Tempo Real</p>
+            </div>
+          </div>
+          <div id="public-map" style="height: 500px; width: 100%; border-radius: 32px; z-index: 10;"></div>
+          
+          <!-- Map Legend & Layer Toggle -->
+          <div class="absolute bottom-6 left-6 z-[1000] flex gap-2">
+            <button (click)="setMapLayer('streets')" [class.active]="currentLayer === 'streets'" class="layer-btn">Rua</button>
+            <button (click)="setMapLayer('satellite')" [class.active]="currentLayer === 'satellite'" class="layer-btn">Satélite</button>
+          </div>
+
+          <div class="absolute bottom-6 right-6 z-[1000] glass-pill px-4 py-2 border border-white/10 rounded-xl text-[10px] text-white/50 font-bold uppercase tracking-widest flex gap-4">
+            <div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-blue-500"></span> Água</div>
+            <div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-emerald-500"></span> Ar</div>
+            <div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-orange-500"></span> Clima</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Main Dashboard & Trends -->
       <div class="dashboard-grid px-6 pb-20">
-        
         <!-- Air Quality Card -->
         <div class="impeccable-card glass-card p-8 group">
           <div class="flex justify-between items-start mb-8">
@@ -104,24 +129,24 @@ import { EnvironmentalService, EnvironmentalMetric, QualityStats } from '../../s
           </div>
         </div>
 
-        <!-- Climate Card -->
+        <!-- Trends & Insights (Magic Touch) -->
         <div class="impeccable-card glass-card p-8 group md:col-span-2 lg:col-span-1">
           <div class="flex justify-between items-start mb-8">
             <div>
-              <h3 class="text-xl font-bold text-slate-800">🌡️ Clima Local</h3>
-              <p class="text-sm text-slate-500">Estações Meteorológicas</p>
+              <h3 class="text-xl font-bold text-slate-800">📊 Tendências Médias</h3>
+              <p class="text-sm text-slate-500">Monitorização Comparativa</p>
             </div>
-            <span class="text-xs font-bold uppercase tracking-widest text-slate-400">Live</span>
           </div>
 
-          <div class="climate-display grid grid-cols-2 gap-6">
-             <div *ngFor="let m of getMetricsByType('climate')" class="climate-item p-4 rounded-2xl bg-slate-50/50 border border-slate-100/50 flex flex-col items-center justify-center text-center">
-                <span class="text-xs font-bold text-slate-400 uppercase mb-2">{{ m.parameter }}</span>
-                <span class="text-2xl font-black text-slate-800">{{ m.value }}<span class="text-sm font-medium opacity-50 ml-0.5">{{ m.unit }}</span></span>
-             </div>
+          <div class="svg-trends mt-4">
+             <svg width="100%" height="200">
+               <g *ngFor="let m of metrics.slice(0, 4); let i = index">
+                 <rect [attr.x]="0" [attr.y]="i * 45" [attr.width]="getValuePercentage(m) + '%'" height="25" rx="12" class="fill-emerald-500/20 stroke-emerald-500/30"></rect>
+                 <text [attr.x]="10" [attr.y]="i * 45 + 17" class="text-[10px] font-black fill-slate-600">{{ m.parameter }}</text>
+               </g>
+             </svg>
           </div>
         </div>
-
       </div>
     </div>
   `,
@@ -193,11 +218,20 @@ import { EnvironmentalService, EnvironmentalMetric, QualityStats } from '../../s
 
     .climate-item { transition: all 0.3s; }
     .climate-item:hover { background: white; border-color: #3b82f6; box-shadow: 0 10px 20px -5px rgba(59,130,246,0.1); }
+
+    .layer-btn { 
+      background: rgba(0,0,0,0.6); backdrop-filter: blur(10px); color: white; border: 1px solid rgba(255,255,255,0.1);
+      padding: 6px 16px; border-radius: 12px; font-size: 10px; font-weight: 800; text-transform: uppercase; cursor: pointer; transition: 0.2s;
+    }
+    .layer-btn.active { background: #10b981; border-color: #10b981; }
   `]
 })
-export class PublicQualityComponent implements OnInit {
+export class PublicQualityComponent implements OnInit, OnDestroy {
   metrics: EnvironmentalMetric[] = [];
   stats?: QualityStats;
+  private map?: L.Map;
+  currentLayer: 'streets' | 'satellite' = 'streets';
+  private layers: { [key: string]: L.TileLayer } = {};
 
   constructor(private envService: EnvironmentalService) {}
 
@@ -205,11 +239,67 @@ export class PublicQualityComponent implements OnInit {
     this.loadStats();
   }
 
+  ngOnDestroy(): void {
+    if (this.map) {
+      this.map.remove();
+    }
+  }
+
   loadStats(): void {
     this.envService.getStats().subscribe({
       next: (res) => {
         this.stats = res;
         this.metrics = res.latest;
+        setTimeout(() => this.initMap(), 100);
+      }
+    });
+  }
+
+  private initMap(): void {
+    if (this.map) return;
+
+    this.map = L.map('public-map', { scrollWheelZoom: false }).setView([11.86, -15.58], 8);
+
+    this.layers['streets'] = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors'
+    });
+
+    this.layers['satellite'] = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+      attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EBP, and the GIS User Community'
+    });
+
+    this.layers['streets'].addTo(this.map);
+    this.addMarkers();
+  }
+
+  setMapLayer(type: 'streets' | 'satellite'): void {
+    if (!this.map) return;
+    this.currentLayer = type;
+    Object.values(this.layers).forEach(l => this.map?.removeLayer(l));
+    this.layers[type].addTo(this.map);
+  }
+
+  private addMarkers(): void {
+    if (!this.map) return;
+
+    this.metrics.forEach(m => {
+      if (m.latitude && m.longitude) {
+        const color = m.type === 'air' ? '#10b981' : (m.type === 'water' ? '#3b82f6' : '#f59e0b');
+        const icon = L.divIcon({
+          className: 'custom-div-icon',
+          html: `<div style="background-color: ${color}; width: 12px; height: 12px; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 10px rgba(0,0,0,0.3); animation: pulse 2s infinite;"></div>`,
+          iconSize: [12, 12],
+          iconAnchor: [6, 6]
+        });
+
+        const marker = L.marker([m.latitude, m.longitude], { icon }).addTo(this.map!);
+        marker.bindPopup(`
+          <div style="font-family: 'Outfit', sans-serif; padding: 5px;">
+            <strong style="color: ${color}; text-transform: uppercase; font-size: 10px;">${m.parameter}</strong><br>
+            <span style="font-size: 14px; font-weight: 800; color: #1e293b;">${m.value} ${m.unit}</span><br>
+            <small style="color: #64748b;">${m.location || 'Estação Móvel'}</small>
+          </div>
+        `);
       }
     });
   }
@@ -219,10 +309,9 @@ export class PublicQualityComponent implements OnInit {
   }
 
   getValuePercentage(m: EnvironmentalMetric): number {
-    // Basic logic for visual representation
+    if (!m.value) return 0;
     if (m.parameter === 'CO2') return Math.min((m.value / 1000) * 100, 100);
     if (m.parameter === 'pH') return (m.value / 14) * 100;
-    if (m.parameter.includes('PM')) return Math.min((m.value / 100) * 100, 100);
     return Math.min((m.value / 100) * 100, 100);
   }
 }

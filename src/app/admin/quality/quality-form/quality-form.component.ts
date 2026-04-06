@@ -82,6 +82,16 @@ import { ToastService } from '../../../services/toast.service';
                   <label>Identificador do Sensor (Opcional)</label>
                   <input type="text" name="sensor_id" [(ngModel)]="metric.sensor_id" class="form-control" placeholder="ID-SENSOR-001">
                 </div>
+
+                <div class="form-group">
+                  <label>Latitude (SIG)</label>
+                  <input type="number" step="any" name="latitude" [(ngModel)]="metric.latitude" class="form-control" placeholder="11.86">
+                </div>
+
+                <div class="form-group">
+                  <label>Longitude (SIG)</label>
+                  <input type="number" step="any" name="longitude" [(ngModel)]="metric.longitude" class="form-control" placeholder="-15.58">
+                </div>
               </div>
             </div>
 

@@ -17,8 +17,8 @@ import { SeoService } from '../../services/seo.service';
         <div class="slide active" style="background-image: linear-gradient(135deg, rgba(8, 25, 18, 0.9) 0%, rgba(18, 51, 38, 0.75) 50%, rgba(0, 0, 0, 0.85) 100%), url('https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=2069&auto=format&fit=crop'); background-position: center;">
           <div class="slide-content anim-up">
             <span class="section-kicker" style="color: #a7f3d0; margin-bottom: 15px; display: block;">Governação Digital</span>
-            <h1 class="logo-text" style="font-size: 3.5rem; line-height: 1.1;">Gestão Interdepartamental</h1>
-            <p class="subtitle" style="max-width: 850px; margin: 0 auto 35px auto; font-size: 1.2rem; opacity: 0.9; color: #fff;">
+            <h1 class="logo-text" style="font-size: clamp(2rem, 5vw, 3.5rem); line-height: 1.1; color: #fff !important; text-shadow: 0 2px 15px rgba(0,0,0,0.5);">Gestão Interdepartamental</h1>
+            <p class="subtitle" style="max-width: 850px; margin: 0 auto 35px auto; font-size: 1.2rem; opacity: 0.95; color: rgba(255,255,255,0.9) !important; text-shadow: 0 1px 5px rgba(0,0,0,0.3);">
               Hub de integração ministerial para coordenação de projetos transversais, 
               partilha de recursos técnicos e monitorização unificada das metas do Estado.
             </p>
@@ -51,7 +51,7 @@ import { SeoService } from '../../services/seo.service';
            <span style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: #64748b; margin-top: 10px; display: block; letter-spacing: 1px;">Nuvem Estatal</span>
         </div>
         <div class="action-card anim-up" style="background: #fff; padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); text-align: center; border: 1px solid rgba(0,0,0,0.05); animation-delay: 0.3s;">
-           <span style="font-size: 2.8rem; font-weight: 800; color: #7c3aed; display: block;">Encryp</span>
+           <span style="font-size: 2.8rem; font-weight: 800; color: #7c3aed; display: block;">🔒</span>
            <span style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: #64748b; margin-top: 10px; display: block; letter-spacing: 1px;">Segurança Dados</span>
         </div>
       </div>
@@ -242,6 +242,15 @@ import { SeoService } from '../../services/seo.service';
     
     @media (max-width: 900px) {
       .hero-grid { grid-template-columns: 1fr !important; }
+    }
+
+    @media (max-width: 768px) {
+      .grid-4 { grid-template-columns: repeat(2, 1fr) !important; }
+      .grid-3 { grid-template-columns: 1fr !important; }
+    }
+
+    @media (max-width: 480px) {
+      .grid-4 { grid-template-columns: 1fr !important; }
     }
   `]
 })

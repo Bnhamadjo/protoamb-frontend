@@ -9,12 +9,12 @@ import { WasteService, WasteStat } from '../../services/waste.service';
   template: `
     <div class="public-waste-portal anim-up">
       <!-- Header Section -->
-      <section class="public-hero" style="background-image: linear-gradient(135deg, rgba(8, 25, 18, 0.9) 0%, rgba(18, 51, 38, 0.75) 50%, rgba(0, 0, 0, 0.85) 100%), url('https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=2069&auto=format&fit=crop')">
+      <section class="public-hero" style="background-image: linear-gradient(135deg, rgba(6, 38, 29, 0.92) 0%, rgba(13, 61, 48, 0.8) 50%, rgba(0, 0, 0, 0.9) 100%), url('https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=2069&auto=format&fit=crop')">
         <div class="hero-bg"></div>
         <div class="hero-content text-center">
-          <div class="section-kicker" style="color: white; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); display: inline-block; margin-bottom: 20px;">Monitorização Ambiental</div>
-          <h1 class="fraunces text-6xl text-white mb-6">Transparência na Gestão de Resíduos</h1>
-          <p class="text-xl opacity-90 max-w-2xl mx-auto text-white">
+          <div class="section-kicker" style="color: var(--accent); background: rgba(255,255,255,0.05); border: 1px solid rgba(234, 179, 8, 0.3); display: inline-block; margin-bottom: 20px; font-weight: 900;">Monitorização Ambiental</div>
+          <h1 class="hero-title text-6xl md:text-8xl mb-6">Transparência na <span class="text-accent">Gestão de Resíduos</span></h1>
+          <p class="hero-subtitle max-w-3xl mx-auto">
             Acompanhe em tempo real os indicadores de produção e reciclagem do Ministério do Ambiente. 
             Promovemos a economia circular para uma Guiné-Bissau mais sustentável.
           </p>

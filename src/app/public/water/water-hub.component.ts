@@ -17,8 +17,8 @@ import * as L from 'leaflet';
       <div class="slides-container">
         <div class="slide active hero-bg-water">
           <div class="slide-content anim-up">
-            <h1 class="logo-text">Recursos Hídricos e Solo</h1>
-            <p class="subtitle">Gestão Territorial e Monitorização Hidro-ambiental</p>
+            <h1 class="hero-title text-6xl md:text-8xl mb-4">Recursos Hídricos <br> e <span class="text-accent">Solo</span></h1>
+            <p class="hero-subtitle mb-8">Gestão Territorial e Monitorização Hidro-ambiental participativa</p>
             <div class="slider-actions">
               <button (click)="activeTab = 'mapa'" class="btn primary lg">🌍 Visualizador Geoespacial</button>
               <button (click)="activeTab = 'licenca'" class="btn outline lg white">📝 Licenciamento Hídrico</button>

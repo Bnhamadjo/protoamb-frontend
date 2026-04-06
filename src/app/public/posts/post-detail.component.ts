@@ -12,20 +12,30 @@ import { SeoService } from '../../services/seo.service';
   selector: 'app-public-post-detail',
   imports: [CommonModule, RouterLink],
   template: `
-    <article class="post-detail" *ngIf="post">
-      <div class="post-hero" [style.backgroundImage]="'url(' + (post.featured_image || fallbackImage) + ')'">
-        <div class="container">
-          <div class="meta">
-            <span>{{ post.created_at | date:'dd MMMM, yyyy' }}</span>
-            <span class="sep">|</span>
-            <span>{{ post.category?.name || 'Noticias' }}</span>
-          </div>
-          <h1>{{ post.title }}</h1>
-        </div>
+    <div class="news-header">
+      <div class="container anim-up">
+        <span class="section-kicker" style="color: #fff; background: rgba(255,255,255,0.15);">Centro Editorial</span>
+        <h1>Publicacoes e Noticias</h1>
+        <p>Comunicacao institucional, relatorios e atualizacoes.</p>
+      </div>
+    </div>
+
+    <article class="post-detail container anim-up" *ngIf="post">
+      <div class="post-meta mb-6">
+        <span class="text-brand font-bold uppercase tracking-wider text-sm">{{ post.category?.name || 'Noticias' }}</span>
+        <span class="mx-3 text-gray-300">|</span>
+        <span class="text-muted font-medium">{{ post.created_at | date:'dd MMMM, yyyy' }}</span>
       </div>
 
-      <div class="container post-body">
-        <div class="content" [innerHTML]="post.body || post.excerpt"></div>
+      <h1 class="detailed-title mb-10 text-5xl md:text-6xl font-black leading-tight">{{ post.title }}</h1>
+
+      <div class="featured-img-box mb-12 shadow-2xl rounded-3xl overflow-hidden anim-up" *ngIf="post.featured_image">
+        <img [src]="post.featured_image" class="w-full" style="display: block;" [alt]="post.title">
+        <p class="image-caption" *ngIf="post.featured_image_caption">{{ post.featured_image_caption }}</p>
+      </div>
+
+      <div class="post-body-content">
+        <div class="content lg:text-xl" [innerHTML]="post.body || post.excerpt"></div>
 
         <div *ngIf="post.document_file" class="document-download">
           <div>
@@ -51,23 +61,21 @@ import { SeoService } from '../../services/seo.service';
     </div>
   `,
   styles: [`
-    .post-hero {
-      min-height: 400px; background-size: cover; background-position: center;
-      display: flex; align-items: flex-end; padding-bottom: 60px; color: #fff;
-      position: relative;
+    .detailed-title { color: var(--brand); max-width: 900px; }
+    .featured-img-box { 
+      max-width: 400px; 
+      float: left;
+      margin: 0 32px 24px 0; 
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 15px 30px rgba(0,0,0,0.1);
     }
-    .post-hero::before {
-      content: ''; position: absolute; inset: 0;
-      background: linear-gradient(transparent, rgba(0,0,0,0.8));
+    @media (max-width: 768px) {
+      .featured-img-box { float: none; margin: 0 0 32px 0; max-width: 100%; }
     }
-    .post-hero .container { position: relative; z-index: 1; }
-    .post-hero h1 { font-size: 3rem; font-weight: 800; margin-top: 15px; }
-    .meta { font-size: 0.9rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; opacity: 0.9; }
-    .sep { margin: 0 10px; }
-    .post-body {
-      max-width: 800px; margin-top: -60px; background: #fff; padding: 60px;
-      border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-      position: relative; z-index: 10; margin-bottom: 80px;
+    .post-body-content {
+      max-width: 900px; margin: 0 auto 80px; 
+      padding: 0;
     }
     .content {
       line-height: 1.95;
@@ -118,6 +126,16 @@ import { SeoService } from '../../services/seo.service';
       text-transform: uppercase;
       color: #5f7361;
       font-weight: 700;
+    }
+    .image-caption {
+      padding: 12px 16px;
+      font-size: 0.85rem;
+      color: var(--ink-muted);
+      font-style: italic;
+      background: rgba(0,0,0,0.02);
+      margin: 0;
+      border-top: 1px solid rgba(0,0,0,0.05);
+      line-height: 1.4;
     }
     .post-footer { margin-top: 60px; border-top: 1px solid var(--border); padding-top: 30px; }
     .empty-state { max-width: 720px; margin: 80px auto; padding: 40px 20px; text-align: center; }

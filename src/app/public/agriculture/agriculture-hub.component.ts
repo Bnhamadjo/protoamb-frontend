@@ -4,6 +4,7 @@ import { RouterModule } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { SettingsService } from '../../services/settings.service';
+import { ToastService } from '../../services/toast.service';
 import { API_BASE } from '../../api-config';
 
 @Component({
@@ -16,8 +17,8 @@ import { API_BASE } from '../../api-config';
       <div class="slides-container">
         <div class="slide active" style="background-image: linear-gradient(135deg, rgba(8, 25, 18, 0.9) 0%, rgba(18, 51, 38, 0.75) 50%, rgba(0, 0, 0, 0.85) 100%), url('https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=2069&auto=format&fit=crop'); background-position: center;">
           <div class="slide-content anim-up">
-            <h1 class="logo-text" style="font-size: 3.5rem;">Extensão Agrícola e Rural</h1>
-            <p class="subtitle" style="max-width: 800px; margin: 0 auto 30px auto; color: #fff; opacity: 0.9;">Apoio técnico direto, disseminação de boas práticas rurais e monitorização partilhada das épocas de sementeira e colheita do país.</p>
+            <h1 class="hero-title text-6xl md:text-8xl mb-6">Extensão <br> <span class="text-accent">Agrícola e Rural</span></h1>
+            <p class="hero-subtitle mb-8 max-w-2xl mx-auto">Assistência técnica de proximidade, boas práticas produtivas e soberania alimentar para a Guiné-Bissau.</p>
             
             <div class="premium-glass-card" style="display: inline-flex; align-items: center; gap: 20px; padding: 15px 35px; border-radius: 50px; background: rgba(255,255,255,0.1); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.2); box-shadow: 0 8px 32px rgba(0,0,0,0.3);">
                <span style="font-size: 2rem;">🌧️</span>
@@ -180,18 +181,25 @@ export class AgricultureHubComponent implements OnInit {
   isSubmitting = false;
   successMessage = false;
 
-  constructor(private http: HttpClient, private settingsService: SettingsService) {}
+  constructor(
+    private http: HttpClient, 
+    private settingsService: SettingsService,
+    private toast: ToastService
+  ) {}
 
   ngOnInit(): void {
-    this.settingsService.getSettings().subscribe(settings => {
-      const s = settings.agriculture_hub_stats;
-      const targets = {
-        produtores: s?.value1 !== undefined ? Number(s.value1) : 4.8,
-        campanhas: s?.value2 !== undefined ? Number(s.value2) : 12,
-        visitas: s?.value3 !== undefined ? Number(s.value3) : 1450,
-        sucesso: s?.value4 !== undefined ? Number(s.value4) : 94,
-      };
-      this.animateStats(targets);
+    this.settingsService.getSettings().subscribe({
+      next: settings => {
+        const s = settings.agriculture_hub_stats;
+        const targets = {
+          produtores: s?.value1 !== undefined ? Number(s.value1) : 4.8,
+          campanhas: s?.value2 !== undefined ? Number(s.value2) : 12,
+          visitas: s?.value3 !== undefined ? Number(s.value3) : 1450,
+          sucesso: s?.value4 !== undefined ? Number(s.value4) : 94,
+        };
+        this.animateStats(targets);
+      },
+      error: () => console.warn('Could not load hub stats')
     });
 
     this.http.get<any[]>(`${API_BASE}/posts?category=extensao-agricola&t=${new Date().getTime()}`).subscribe({
@@ -259,7 +267,7 @@ export class AgricultureHubComponent implements OnInit {
       },
       error: () => {
         this.isSubmitting = false;
-        alert('Ocorreu um erro ao submeter o pedido. Verifique a ligação e tente novamente.');
+        this.toast.error('Ocorreu um erro ao submeter o pedido. Verifique a ligação e tente novamente.');
       }
     });
   }

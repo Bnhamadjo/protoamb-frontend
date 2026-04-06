@@ -59,6 +59,12 @@ type LibraryMode = 'image' | 'document';
 
           <div *ngIf="post.featured_image" class="preview-container">
             <img [src]="post.featured_image" alt="Preview">
+            
+            <div class="form-group w-full" style="margin-top: 10px;">
+              <label class="sm">Legenda da Imagem (Opcional)</label>
+              <input [(ngModel)]="post.featured_image_caption" name="featured_image_caption" placeholder="Ex: Foto por João Silva / Ministério do Ambiente">
+            </div>
+
             <div class="preview-actions">
               <button type="button" class="btn outline sm" (click)="openMediaLibrary('image')">Trocar pela galeria</button>
               <button type="button" class="btn danger sm" (click)="removeImage()">Remover imagem</button>
