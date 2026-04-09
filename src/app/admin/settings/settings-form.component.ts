@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { DepartmentItem, GalleryItem, HomeActionCard, HomeSliderItem, HubStats, MapMarker, PlatformModuleItem, SettingsService, SiteSettings } from '../../services/settings.service';
+import { DepartmentItem, GalleryItem, HomeActionCard, HomeSliderItem, HubStats, MapMarker, PlatformModuleItem, SettingsService, SiteSettings, WaterInstrument } from '../../services/settings.service';
 import { MediaPickerComponent, MediaPickerSelection } from '../../shared/media-picker/media-picker.component';
 import { ToastService } from '../../services/toast.service';
 
@@ -163,6 +163,23 @@ import { ToastService } from '../../services/toast.service';
                 </div>
               </div>
             </div>
+            
+            <section class="impeccable-card p-8 mt-8">
+              <h3 class="text-xl font-serif text-brand mb-6 border-b pb-4">Indicadores da Homepage (Stats)</h3>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                <div>
+                  <p class="text-sm text-ink-muted mb-4">Escolha a imagem que aparecerá desfocada atrás dos contadores (Fauna, Flora, etc.). Recomenda-se uma imagem horizontal de alta qualidade.</p>
+                  <button type="button" class="btn outline w-full" (click)="openImagePicker('stats_background_image', 'Fundo das Estatisticas')">
+                    📦 Selecionar Imagem da Praça / Natureza
+                  </button>
+                </div>
+                <div class="h-40 rounded-2xl overflow-hidden border-2 border-slate-100 bg-slate-50 relative group cursor-pointer" (click)="openImagePicker('stats_background_image', 'Fundo das Estatisticas')">
+                  <img *ngIf="settings.stats_background_image" [src]="settings.stats_background_image" class="w-full h-full object-cover">
+                  <div *ngIf="!settings.stats_background_image" class="w-full h-full flex items-center justify-center text-ink-muted opacity-40 italic">Sem imagem definida.</div>
+                  <div class="absolute inset-0 bg-brand/40 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center text-white font-bold uppercase text-[10px] tracking-widest">Alterar Fundo</div>
+                </div>
+              </div>
+            </section>
           </div>
 
           <!-- TAB: HUBS -->
@@ -268,6 +285,56 @@ import { ToastService } from '../../services/toast.service';
                 </div>
               </div>
             </div>
+
+            <div class="impeccable-card p-8">
+              <div class="flex justify-between items-center mb-8 border-b pb-4">
+                <div>
+                  <h3 class="text-2xl font-serif text-brand">Instrumentos de Ordenamento</h3>
+                  <p class="text-sm text-ink-muted">Gestão do repositório de planos, cartas e diretivas hídricas.</p>
+                </div>
+                <button type="button" class="btn primary sm" (click)="addWaterInstrument()">+ Novo Instrumento</button>
+              </div>
+
+              <div class="space-y-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
+                <div *ngFor="let m of settings.water_instruments; let i = index" class="glass-card p-6 border-2 border-slate-50 relative group">
+                  <button type="button" class="absolute -top-3 -right-3 w-7 h-7 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-all shadow-md flex items-center justify-center z-10" (click)="removeWaterInstrument(i)">&times;</button>
+                  <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+                    <div class="md:col-span-3">
+                      <label class="block text-[10px] font-bold text-ink-muted uppercase tracking-widest mb-1">Tipo de Documento</label>
+                      <select [(ngModel)]="m.type" [name]="'wit_'+i" class="w-full p-2 border rounded-lg bg-white text-sm">
+                        <option value="Plano Diretor">Plano Diretor</option>
+                        <option value="Cartografia">Cartografia</option>
+                        <option value="Manual Técnico">Manual Técnico</option>
+                        <option value="Dados / Relatório">Dados / Relatório</option>
+                        <option value="Normativa">Normativa</option>
+                      </select>
+                    </div>
+                    <div class="md:col-span-7">
+                      <label class="block text-[10px] font-bold text-ink-muted uppercase tracking-widest mb-1">Título do Instrumento</label>
+                      <input [(ngModel)]="m.name" [name]="'win_'+i" class="w-full p-2 border rounded-lg bg-white text-sm" placeholder="Ex: Plano Estratégico do Rio Corubal">
+                    </div>
+                    <div class="md:col-span-2">
+                      <label class="block text-[10px] font-bold text-ink-muted uppercase tracking-widest mb-1">Ano</label>
+                      <input [(ngModel)]="m.year" [name]="'wiy_'+i" class="w-full p-2 border rounded-lg bg-white text-sm" placeholder="2024">
+                    </div>
+                    <div class="md:col-span-12">
+                      <label class="block text-[10px] font-bold text-ink-muted uppercase tracking-widest mb-1">Resumo / Descrição</label>
+                      <textarea [(ngModel)]="m.summary" [name]="'wis_'+i" class="w-full p-2 border rounded-lg bg-white text-sm" rows="2"></textarea>
+                    </div>
+                    <div class="md:col-span-12">
+                      <div class="flex items-center gap-4 p-3 rounded-xl border-2 border-dashed border-slate-100 hover:border-brand cursor-pointer transition-all bg-slate-50/30" (click)="openImagePicker('instrument_pdf', 'Selecionar PDF', i)">
+                        <div class="w-10 h-10 rounded-lg bg-red-50 text-red-500 flex items-center justify-center font-bold text-xs">PDF</div>
+                        <div class="flex-grow">
+                          <span class="block text-[10px] font-bold text-ink-muted uppercase">Ficheiro do Instrumento</span>
+                          <span class="text-xs truncate max-w-[400px]" [class.text-brand]="m.pdf_url">{{ m.pdf_url || 'Nenhum ficheiro selecionado...' }}</span>
+                        </div>
+                        <button type="button" class="btn ghost sm">Alterar</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
 
           <!-- TAB: GALERIA -->
@@ -325,7 +392,7 @@ import { ToastService } from '../../services/toast.service';
 
       <app-media-picker
         [visible]="pickerOpen"
-        mode="image"
+        [mode]="pickerTarget === 'instrument_pdf' ? 'document' : 'image'"
         [title]="pickerTitle"
         (close)="pickerOpen = false"
         (selected)="onImageSelected($event)">
@@ -433,6 +500,7 @@ export class SettingsFormComponent implements OnInit {
     agriculture_hub_stats: HubStats;
     home_gallery: GalleryItem[];
     map_markers: MapMarker[];
+    water_instruments: WaterInstrument[];
     logo_admin: string;
   } = {
     site_name: '',
@@ -458,6 +526,8 @@ export class SettingsFormComponent implements OnInit {
     agriculture_hub_stats: { label1: '', value1: undefined, label2: '', value2: undefined, label3: '', value3: undefined, label4: '', value4: undefined },
     home_gallery: [],
     map_markers: [],
+    water_instruments: [],
+    stats_background_image: '',
   };
 
   loading = true;
@@ -466,7 +536,7 @@ export class SettingsFormComponent implements OnInit {
   pickerTitle = '';
   audienceDraft = '';
 
-  pickerTarget: 'logo_header' | 'logo_footer' | 'logo_admin' | 'about_section_image' | 'slide' | 'action_card' | 'gallery' = 'logo_header';
+  pickerTarget: 'logo_header' | 'logo_footer' | 'logo_admin' | 'about_section_image' | 'slide' | 'action_card' | 'gallery' | 'stats_background_image' | 'instrument_pdf' = 'logo_header';
   pickerIndex = -1;
 
   constructor(
@@ -479,7 +549,7 @@ export class SettingsFormComponent implements OnInit {
   }
 
   openImagePicker(
-    target: 'logo_header' | 'logo_footer' | 'logo_admin' | 'about_section_image' | 'slide' | 'action_card' | 'gallery',
+    target: 'logo_header' | 'logo_footer' | 'logo_admin' | 'about_section_image' | 'slide' | 'action_card' | 'gallery' | 'stats_background_image' | 'instrument_pdf',
     title: string,
     index = -1
   ): void {
@@ -509,6 +579,12 @@ export class SettingsFormComponent implements OnInit {
     } else if (this.pickerTarget === 'gallery' && this.pickerIndex >= 0) {
       if (this.settings.home_gallery[this.pickerIndex]) {
         this.settings.home_gallery[this.pickerIndex].url = selection.url;
+      }
+    } else if (this.pickerTarget === 'stats_background_image') {
+      this.settings.stats_background_image = selection.url;
+    } else if (this.pickerTarget === 'instrument_pdf' && this.pickerIndex >= 0) {
+      if (this.settings.water_instruments[this.pickerIndex]) {
+        this.settings.water_instruments[this.pickerIndex].pdf_url = selection.url;
       }
     }
 
@@ -592,6 +668,17 @@ export class SettingsFormComponent implements OnInit {
     }
   }
 
+  addWaterInstrument(): void {
+    if (!this.settings.water_instruments) this.settings.water_instruments = [];
+    this.settings.water_instruments.push({ type: 'Plano Diretor', name: '', summary: '', year: new Date().getFullYear(), pdf_url: '' });
+  }
+
+  removeWaterInstrument(index: number): void {
+    if (this.settings.water_instruments) {
+      this.settings.water_instruments.splice(index, 1);
+    }
+  }
+
   save(): void {
     this.saving = true;
     this.settings.target_audiences = this.audienceDraft
@@ -600,6 +687,7 @@ export class SettingsFormComponent implements OnInit {
 
     this.settingsService.updateSettings({
       ...this.settings,
+      water_instruments: this.settings.water_instruments || [],
       home_slider: (this.settings.home_slider || []).map((item: any) => {
         const { uploading, ...rest } = item;
         return rest;
@@ -666,6 +754,8 @@ export class SettingsFormComponent implements OnInit {
         };
         this.settings.home_gallery = res.home_gallery || [];
         this.settings.map_markers = res.map_markers || [];
+        this.settings.stats_background_image = res.stats_background_image || '';
+        this.settings.water_instruments = res.water_instruments || [];
         this.audienceDraft = this.settings.target_audiences.join(', ');
         this.loading = false;
       },

@@ -13,7 +13,7 @@ import { AuthService } from '../../../core/auth';
     <header class="public-header" [class.mobile-menu-active]="menuOpen">
       <div class="container container-header">
         <div class="logo-area" routerLink="/" (click)="menuOpen = false">
-          <img *ngIf="settings.logo_header" [src]="settings.logo_header" [alt]="settings.site_name">
+          <img *ngIf="settings.logo_header" [src]="settings.logo_header" [alt]="settings.site_name" (error)="onLogoError($event)">
           <img *ngIf="!settings.logo_header" src="/logo.png" [alt]="settings.site_name || 'protoAmb'">
         </div>
         
@@ -176,6 +176,10 @@ export class PublicHeaderComponent implements OnInit {
     private settingsService: SettingsService,
     public auth: AuthService
   ) { }
+
+  onLogoError(event: any): void {
+    event.target.src = '/logo.png';
+  }
 
   ngOnInit(): void {
     this.currentLang = localStorage.getItem('portal_lang') || 'pt';

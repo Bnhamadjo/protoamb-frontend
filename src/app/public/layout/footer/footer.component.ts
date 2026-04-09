@@ -12,7 +12,7 @@ import { DepartmentItem, PlatformModuleItem, SettingsService } from '../../../se
       <div class="container footer-grid">
         <div class="footer-brand">
           <div class="logo-area">
-             <img *ngIf="settings.logo_footer" [src]="settings.logo_footer" [alt]="settings.site_name">
+             <img *ngIf="settings.logo_footer" [src]="settings.logo_footer" [alt]="settings.site_name" (error)="onLogoError($event)">
              <h2 *ngIf="!settings.logo_footer" class="footer-title">{{ settings.site_name || 'protoAmb' }}</h2>
           </div>
           <p class="footer-tagline">{{ settings.platform_tagline || 'Excelência em governação ambiental e monitorização territorial para a Guiné-Bissau.' }}</p>
@@ -128,6 +128,13 @@ export class PublicFooterComponent implements OnInit {
   departments: DepartmentItem[] = [];
 
   constructor(private settingsService: SettingsService) {}
+
+  onLogoError(event: any): void {
+    event.target.style.display = 'none';
+    // Se a imagem falhar, podemos mostrar o fallback. Como o fallback aqui é um <h2> e não uma imagem,
+    // garantimos que o broken image não aparece.
+    this.settings.logo_footer = null; 
+  }
 
   ngOnInit(): void {
     this.settingsService.getSettings().subscribe((res) => {

@@ -46,6 +46,14 @@ export interface HubStats {
   label4?: string; value4?: number | string;
 }
 
+export interface WaterInstrument {
+  type: string;
+  name: string;
+  summary: string;
+  year: string | number;
+  pdf_url: string;
+}
+
 export interface MapMarker {
   lat: number;
   lng: number;
@@ -79,6 +87,8 @@ export interface SiteSettings {
   // Hub-specific editable stats
   water_hub_stats?: HubStats;
   agriculture_hub_stats?: HubStats;
+  stats_background_image?: string;
+  water_instruments?: WaterInstrument[];
 }
 
 @Injectable({ providedIn: 'root' })
@@ -126,6 +136,7 @@ export class SettingsService {
       map_markers: this.parseJsonArray<MapMarker>(settings['map_markers'], []),
       water_hub_stats: this.parseJsonObject<HubStats>(settings['water_hub_stats'], {}),
       agriculture_hub_stats: this.parseJsonObject<HubStats>(settings['agriculture_hub_stats'], {}),
+      water_instruments: this.parseJsonArray<WaterInstrument>(settings['water_instruments'], []),
     };
   }
 

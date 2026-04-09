@@ -29,8 +29,8 @@ export class PostService {
 
   constructor(private http: HttpClient) {}
 
-  all(): Observable<Post[]> {
-    return this.http.get<Post[]>(this.API).pipe(timeout(30000));
+  all(params?: any): Observable<Post[]> {
+    return this.http.get<Post[]>(this.API, { params }).pipe(timeout(30000));
   }
 
   show(slug: string): Observable<Post> {

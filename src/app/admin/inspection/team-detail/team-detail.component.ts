@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule, Router } from '@angular/router';
 import { TeamService, Equipa } from '../services/team.service';
+import { UserService, User } from '../../../services/user.service';
 import { FormsModule } from '@angular/forms';
 import { ToastService } from '../../../services/toast.service';
 
@@ -58,7 +59,12 @@ import { ToastService } from '../../../services/toast.service';
             <div class="mt-6 pt-6 border-t">
               <h3 class="font-bold mb-3">Adicionar Membro</h3>
               <div class="flex gap-2">
-                <input type="number" placeholder="ID do Utilizador" class="flex-1 p-2 border rounded-lg text-sm" [(ngModel)]="newMemberId">
+                <select class="flex-1 p-2 border rounded-lg text-sm" [(ngModel)]="newMemberId">
+                  <option [ngValue]="undefined">Escolher Utilizador...</option>
+                  <option *ngFor="let u of users" [value]="u.id">
+                    {{ u.name }} — {{ u.email }}
+                  </option>
+                </select>
                 <select class="p-2 border rounded-lg text-sm" [(ngModel)]="newMemberRole">
                   <option value="tecnico">Técnico</option>
                   <option value="lider">Líder</option>
@@ -96,6 +102,7 @@ import { ToastService } from '../../../services/toast.service';
 })
 export class TeamDetailComponent implements OnInit {
   team?: Equipa;
+  users: User[] = [];
   newMemberId?: number;
   newMemberRole: string = 'tecnico';
 
@@ -103,6 +110,7 @@ export class TeamDetailComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private teamService: TeamService,
+    private userService: UserService,
     private toast: ToastService
   ) {}
 
@@ -111,6 +119,14 @@ export class TeamDetailComponent implements OnInit {
     if (id) {
       this.loadTeam(id);
     }
+    this.loadUsers();
+  }
+
+  loadUsers() {
+    this.userService.getUsers().subscribe({
+      next: data => this.users = data,
+      error: () => this.toast.error('Erro ao carregar lista de utilizadores.')
+    });
   }
 
   loadTeam(id: number) {

@@ -52,13 +52,28 @@
     </div>
 
     <div class="form-group">
-      <label>Conteudo da Pagina</label>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+        <label style="margin: 0;">Conteudo da Pagina</label>
+        <button type="button" class="btn ghost sm" (click)="showSource = !showSource">
+          {{ showSource ? '[ Ver Editor Visual ]' : '[ < > Ver Código ]' }}
+        </button>
+      </div>
+      
       <quill-editor 
+        *ngIf="!showSource"
         [(ngModel)]="page.content" 
         name="content" 
         [styles]="{ height: '400px', 'background': '#fff' }"
         placeholder="Desenvolva o conteudo aqui..."
       ></quill-editor>
+
+      <textarea
+        *ngIf="showSource"
+        [(ngModel)]="page.content"
+        name="content_source"
+        style="width: 100%; height: 400px; font-family: monospace; padding: 16px; border: 1px solid var(--border); border-radius: 8px; background: #1e1e1e; color: #d4d4d4;"
+        placeholder="Adicione o código HTML aqui..."
+      ></textarea>
     </div>
 
     <div class="grid-3">

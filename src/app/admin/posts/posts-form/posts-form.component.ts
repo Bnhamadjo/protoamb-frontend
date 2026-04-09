@@ -107,13 +107,28 @@ type LibraryMode = 'image' | 'document';
         </div>
 
         <div class="form-group">
-          <label>Conteudo</label>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <label style="margin: 0;">Conteudo</label>
+            <button type="button" class="btn ghost sm" (click)="showSource = !showSource">
+              {{ showSource ? '[ Ver Editor Visual ]' : '[ < > Ver Código ]' }}
+            </button>
+          </div>
+
           <quill-editor
+            *ngIf="!showSource"
             [(ngModel)]="post.body"
             name="body"
             [styles]="{ height: '350px', 'background': '#fff' }"
             placeholder="Comece a escrever a historia..."
           ></quill-editor>
+
+          <textarea
+            *ngIf="showSource"
+            [(ngModel)]="post.body"
+            name="body_source"
+            style="width: 100%; height: 350px; font-family: monospace; padding: 16px; border: 1px solid var(--border); border-radius: 8px; background: #1e1e1e; color: #d4d4d4;"
+            placeholder="Adicione o código HTML aqui..."
+          ></textarea>
         </div>
 
         <div class="preview-block card" *ngIf="post.body">
@@ -369,6 +384,7 @@ export class PostsFormComponent implements OnInit {
   librarySearch = '';
   libraryMedia: MediaFile[] = [];
   filteredLibraryMedia: MediaFile[] = [];
+  showSource = false;
 
   constructor(
     private route: ActivatedRoute,

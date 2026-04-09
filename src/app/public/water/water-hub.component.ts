@@ -94,7 +94,8 @@ import * as L from 'leaflet';
                      </td>
                      <td class="hide-mobile font-bold">{{ item.year }}</td>
                      <td class="text-right">
-                        <button class="btn outline sm">PDF</button>
+                        <a *ngIf="item.pdf_url" [href]="item.pdf_url" target="_blank" class="btn outline sm">PDF</a>
+                        <span *ngIf="!item.pdf_url" class="text-xs italic opacity-40">N/D</span>
                      </td>
                   </tr>
                </tbody>
@@ -276,13 +277,7 @@ export class WaterHubComponent implements OnInit {
   licencaSuccess = false;
   ticketNumber = '';
 
-  instruments = [
-    { type: 'Plano Diretor', name: 'Plano Nacional Integrado de Bacias (PNIB)', summary: 'Estratégia nacional atualizada para a gestão.', year: 2024 },
-    { type: 'Cartografia', name: 'Carta de Aptidão de Solos e Uso da Terra', summary: 'Mapeamento das capacidades produtivas.', year: 2025 },
-    { type: 'Manual Técnico', name: 'Guia Base de Controlo de Erosão Costeira', summary: 'Intervenções de engenharia natural.', year: 2023 },
-    { type: 'Dados / Relatório', name: 'Atlas Geoespacial Hídrico Integrado', summary: 'Base de dados espaciais consolidada.', year: 2026 },
-    { type: 'Normativa', name: 'Regulamento de Captação Subterrânea', summary: 'Regras de perfuração de furos.', year: 2022 },
-  ];
+  instruments: any[] = [];
 
   constructor(private http: HttpClient, private settingsService: SettingsService) {}
 
@@ -302,6 +297,7 @@ export class WaterHubComponent implements OnInit {
         planos: s?.label3 || 'Planos em Vigor',
         dados: s?.label4 || 'Registos Espaciais',
       };
+      this.instruments = settings.water_instruments || [];
       this.animateStats(targets);
     });
   }

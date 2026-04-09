@@ -53,6 +53,21 @@ export const routes: Routes = [
         loadComponent: () => import('./admin/posts/posts-form/posts-form.component').then(m => m.PostsFormComponent)
       },
 
+      // Biblioteca Legal
+      {
+        path: 'legal',
+        loadComponent: () => import('./admin/legal/legal-list/legal-list.component').then(m => m.LegalListComponent),
+        data: { roles: ['admin', 'tecnico'] }
+      },
+      {
+        path: 'legal/new',
+        loadComponent: () => import('./admin/legal/legal-form/legal-form.component').then(m => m.LegalFormComponent)
+      },
+      {
+        path: 'legal/:slug',
+        loadComponent: () => import('./admin/legal/legal-form/legal-form.component').then(m => m.LegalFormComponent)
+      },
+
       // Biodiversidade
       { 
         path: 'biodiversity', 
@@ -108,6 +123,10 @@ export const routes: Routes = [
           { 
             path: 'edit/:id', 
             loadComponent: () => import('./admin/users/user-form/user-form.component').then(m => m.UserFormComponent) 
+          },
+          { 
+            path: 'activities', 
+            loadComponent: () => import('./admin/users/activity-log/activity-log.component').then(m => m.ActivityLogComponent) 
           },
         ]
       },

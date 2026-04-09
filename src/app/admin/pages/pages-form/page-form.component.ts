@@ -30,6 +30,7 @@ export class PagesFormComponent implements OnInit {
   error = '';
   dirty = false;
   imagePickerOpen = false;
+  showSource = false;
 
   constructor(
     private route: ActivatedRoute,

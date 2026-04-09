@@ -70,8 +70,13 @@ import { DepartmentItem, GalleryItem, HomeActionCard, PlatformModuleItem, Settin
       </div>
     </section>
 
-    <section class="stats-section py-20" style="background: var(--brand); color: white;">
-      <div class="container grid-4 text-center anim-up">
+    <section class="stats-section py-20" style="position: relative; overflow: hidden; color: white;">
+      <!-- Blurred Background Layer -->
+      <div class="stats-bg" *ngIf="statsBackgroundImage" [style.background-image]="'url(' + statsBackgroundImage + ')'"></div>
+      <!-- Brand Overlay (ensures readability and consistent color theme) -->
+      <div class="stats-overlay" [style.background]="statsBackgroundImage ? 'rgba(10, 38, 26, 0.75)' : 'var(--brand)'"></div>
+
+      <div class="container grid-4 text-center anim-up" style="position: relative; z-index: 5;">
         <a routerLink="/biodiversity" class="stat-item cursor-pointer hover-lift">
           <span class="stat-number">{{ stats.fauna || 1250 }}</span>
           <p class="stat-desc">Espécies de Fauna</p>
@@ -313,8 +318,13 @@ import { DepartmentItem, GalleryItem, HomeActionCard, PlatformModuleItem, Settin
     }
     .stat-number { display: block; font-size: 3.5rem; font-weight: 800; font-family: 'Fraunces', serif; line-height: 1; margin-bottom: 8px; }
     .stat-desc { font-size: 0.95rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; opacity: 0.85; }
-    .stat-item { padding: 40px 20px; transition: var(--transition); border-radius: 24px; text-decoration: none !important; color: inherit; }
+    .stat-item { padding: 40px 20px; transition: var(--transition); border-radius: 24px; text-decoration: none !important; color: inherit; position: relative; z-index: 10; }
     .stat-item:hover { background: rgba(255,255,255,0.08); }
+    .stats-bg { 
+      position: absolute; inset: 0; background-size: cover; background-position: center; 
+      filter: blur(3px); transform: scale(1.1); z-index: 0;
+    }
+    .stats-overlay { position: absolute; inset: 0; z-index: 1; }
 
     .platform-section { padding: 30px 0 80px; background: linear-gradient(180deg, rgba(247, 244, 236, 0.6), rgba(238, 245, 239, 0.95)); }
     .platform-grid { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 28px; align-items: stretch; }
@@ -522,6 +532,7 @@ export class PublicHomeComponent implements OnInit, OnDestroy {
   fallbackPostImage = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 700'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop stop-color='%2327442f'/><stop offset='1' stop-color='%2394b77a'/></linearGradient></defs><rect width='1200' height='700' fill='url(%23g)'/><rect x='90' y='90' width='420' height='34' rx='6' fill='%23ffffff66'/><rect x='90' y='150' width='620' height='18' rx='6' fill='%23ffffff55'/><rect x='90' y='186' width='520' height='18' rx='6' fill='%23ffffff44'/></svg>";
 
   stats: any = { fauna: 0, flora: 0, areas: 0, projects: 0 };
+  statsBackgroundImage = '';
   posts: any[] = [];
   slider: any[] = [];
   actionCards: HomeActionCard[] = [
@@ -589,6 +600,7 @@ export class PublicHomeComponent implements OnInit, OnDestroy {
         this.solutionModules = settings.solution_modules?.length ? settings.solution_modules : this.createDefaultModules();
         this.stateDepartments = settings.state_departments?.length ? settings.state_departments : this.createDefaultDepartments();
         this.homeGallery = settings.home_gallery || [];
+        this.statsBackgroundImage = settings.stats_background_image || '';
       }
     });
 
